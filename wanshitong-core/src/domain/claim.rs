@@ -194,6 +194,10 @@ pub enum Heuristic {
     /// A series' name without the words at its end that a release adds,
     /// e.g. `detective conan` for `Detective Conan Remastered - 045`.
     SeriesNameWithoutReleaseWords,
+    /// An NFO file's: a release's, with its IMDb link, or a media server's
+    /// or its manager's, e.g. Kodi's XML, beside the video or at its series'
+    /// root, with its work's IDs, title and year, and an episode's numbers.
+    Nfo,
 }
 
 impl Heuristic {

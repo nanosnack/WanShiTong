@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "\n            INSERT OR IGNORE INTO file_measurements (\n                ingest_id,\n                data_source_id,\n                rel_path,\n                device,\n                inode,\n                size,\n                mtime,\n                ctime,\n                hardlink_count,\n                is_symlink,\n                media_measurement_id,\n                nfo_text\n            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\n            RETURNING id AS \"id!: _\"\n            ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: _",
+        "ordinal": 0,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 12
+    },
+    "nullable": [
+      true
+    ]
+  },
+  "hash": "606b85eacf7544838b555af97d6a5aa16ed1d0cdfd321922e39c2441513a1517"
+}

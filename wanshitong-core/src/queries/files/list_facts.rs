@@ -35,6 +35,7 @@ pub async fn list_facts(
             m.hardlink_count,
             m.is_symlink,
             m.media_measurements AS "media_measurements?: String",
+            m.nfo_text,
             d.kind AS "disc_kind?: String",
             d.root_path AS "disc_root?: String",
             d.size AS "disc_size?: i64",
@@ -92,6 +93,7 @@ pub async fn list_facts(
                         r.disc_size,
                         r.disc_duration_ms,
                     )?,
+                    nfo_text: r.nfo_text,
                 },
             ))
         })

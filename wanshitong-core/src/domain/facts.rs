@@ -20,6 +20,9 @@ pub struct FileFacts {
     pub media: Option<FileMediaMeasurements>,
     /// The disc it stands for, if it's a disc's index file.
     pub disc: Option<DiscFacts>,
+    /// Its text, if it's an NFO: a release's, e.g. with its IMDb link, or a
+    /// media server's or its manager's, e.g. Kodi's XML.
+    pub nfo_text: Option<String>,
 }
 
 /// A disc, as its index file's facts carry it. See *Disc* in

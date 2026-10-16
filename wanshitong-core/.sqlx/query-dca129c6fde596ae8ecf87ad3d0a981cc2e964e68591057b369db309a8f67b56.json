@@ -1,6 +1,6 @@
 {
   "db_name": "SQLite",
-  "query": "\n        WITH fact_ingests AS (\n            SELECT ingest_id\n            FROM interpretation_ingests\n            WHERE interpretation_id = ?\n        )\n        SELECT\n            m.id AS \"id!: FileMeasurementRowId\",\n            m.data_source_uuid AS \"data_source_uuid!: DataSourceUuid\",\n            m.data_source_name,\n            m.rel_path,\n            m.device,\n            m.inode,\n            m.size,\n            m.mime_type,\n            m.mtime,\n            m.ctime,\n            m.hardlink_count,\n            m.is_symlink,\n            m.media_measurements AS \"media_measurements?: String\",\n            d.kind AS \"disc_kind?: String\",\n            d.root_path AS \"disc_root?: String\",\n            d.size AS \"disc_size?: i64\",\n            d.duration_ms AS \"disc_duration_ms?: i64\",\n            (SELECT count(*) FROM disc_files df WHERE df.disc_id = d.id) AS \"disc_member_count?: i64\"\n        FROM complete_file_measurements m\n        JOIN fact_ingests fi\n            ON fi.ingest_id = m.ingest_id\n        LEFT JOIN discs d\n            ON d.index_file_id = m.id\n        -- A disc's other files: its index file stands for them.\n        WHERE m.id NOT IN (SELECT file_id FROM disc_files)\n        ORDER BY\n            data_source_name,\n            rel_path;\n        ",
+  "query": "\n        WITH fact_ingests AS (\n            SELECT ingest_id\n            FROM interpretation_ingests\n            WHERE interpretation_id = ?\n        )\n        SELECT\n            m.id AS \"id!: FileMeasurementRowId\",\n            m.data_source_uuid AS \"data_source_uuid!: DataSourceUuid\",\n            m.data_source_name,\n            m.rel_path,\n            m.device,\n            m.inode,\n            m.size,\n            m.mime_type,\n            m.mtime,\n            m.ctime,\n            m.hardlink_count,\n            m.is_symlink,\n            m.media_measurements AS \"media_measurements?: String\",\n            m.nfo_text,\n            d.kind AS \"disc_kind?: String\",\n            d.root_path AS \"disc_root?: String\",\n            d.size AS \"disc_size?: i64\",\n            d.duration_ms AS \"disc_duration_ms?: i64\",\n            (SELECT count(*) FROM disc_files df WHERE df.disc_id = d.id) AS \"disc_member_count?: i64\"\n        FROM complete_file_measurements m\n        JOIN fact_ingests fi\n            ON fi.ingest_id = m.ingest_id\n        LEFT JOIN discs d\n            ON d.index_file_id = m.id\n        -- A disc's other files: its index file stands for them.\n        WHERE m.id NOT IN (SELECT file_id FROM disc_files)\n        ORDER BY\n            data_source_name,\n            rel_path;\n        ",
   "describe": {
     "columns": [
       {
@@ -69,28 +69,33 @@
         "type_info": "Text"
       },
       {
-        "name": "disc_kind?: String",
+        "name": "nfo_text",
         "ordinal": 13,
         "type_info": "Text"
       },
       {
-        "name": "disc_root?: String",
+        "name": "disc_kind?: String",
         "ordinal": 14,
         "type_info": "Text"
       },
       {
-        "name": "disc_size?: i64",
+        "name": "disc_root?: String",
         "ordinal": 15,
-        "type_info": "Integer"
+        "type_info": "Text"
       },
       {
-        "name": "disc_duration_ms?: i64",
+        "name": "disc_size?: i64",
         "ordinal": 16,
         "type_info": "Integer"
       },
       {
-        "name": "disc_member_count?: i64",
+        "name": "disc_duration_ms?: i64",
         "ordinal": 17,
+        "type_info": "Integer"
+      },
+      {
+        "name": "disc_member_count?: i64",
+        "ordinal": 18,
         "type_info": "Null"
       }
     ],
@@ -111,6 +116,7 @@
       true,
       false,
       false,
+      true,
       false,
       false,
       false,
@@ -118,5 +124,5 @@
       null
     ]
   },
-  "hash": "0e09ceee6ac86792d5f6808d04c6f4e426e9ada94763973a5d79277a5bd1e0ff"
+  "hash": "dca129c6fde596ae8ecf87ad3d0a981cc2e964e68591057b369db309a8f67b56"
 }

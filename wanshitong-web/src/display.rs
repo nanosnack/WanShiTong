@@ -210,6 +210,7 @@ pub fn heuristic_name(heuristic: &Heuristic) -> &'static str {
         Heuristic::TitleWithoutEdition => "Title without its edition",
         Heuristic::FileNameEpisodeTitle => "Episode title in file name",
         Heuristic::NameExternalId => "ID in a name",
+        Heuristic::Nfo => "NFO file",
     }
 }
 

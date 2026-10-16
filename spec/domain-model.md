@@ -237,6 +237,11 @@ Examples:
 - "File exists at path X"
 - "This MP4 container has one video stream and two audio streams"
 - "This video stream uses the H.264 codec"
+- "This NFO file's text is `<movie><title>Heat</title>...`"
+
+An NFO's text is a measurement, not what it says: that a release's link or a media server's
+`<uniqueid>` names the work is a *claim*, made by a *heuristic* that reads the text,
+so that what an NFO is trusted with can change without another ingest.
 
 Properties:
 - Data Source ID

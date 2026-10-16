@@ -33,6 +33,7 @@ struct PendingFile {
     rel_path: String,
     file: FileMeasurement,
     media: Option<PendingMedia>,
+    nfo_text: Option<String>,
 }
 
 struct PendingFailure {
@@ -78,6 +79,7 @@ impl<'a> DbIngestSink<'a> {
             rel_path,
             file,
             media,
+            nfo_text,
         } in &self.pending
         {
             let FileMeasurement {
@@ -111,8 +113,9 @@ impl<'a> DbIngestSink<'a> {
                 ctime,
                 hardlink_count,
                 is_symlink,
-                media_measurement_id
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                media_measurement_id,
+                nfo_text
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             RETURNING id AS "id!: _"
             "#,
                 self.ingest_id,
@@ -125,7 +128,8 @@ impl<'a> DbIngestSink<'a> {
                 ctime,
                 hardlink_count,
                 is_symlink,
-                media_measurement_id
+                media_measurement_id,
+                nfo_text
             )
             .fetch_one(&mut *txn)
             .await
@@ -209,6 +213,7 @@ impl<'a> IngestSink for DbIngestSink<'a> {
             mime,
             media,
             ffprobe_json,
+            nfo_text,
         } = probed;
         let media = media.map(|media| PendingMedia {
             mime: mime.map(str::to_owned),
@@ -221,6 +226,7 @@ impl<'a> IngestSink for DbIngestSink<'a> {
             rel_path: rel_path.to_string_lossy().into_owned(),
             file: file.clone(),
             media,
+            nfo_text: nfo_text.map(str::to_owned),
         });
 
         if self.pending.len() >= BATCH_SIZE {

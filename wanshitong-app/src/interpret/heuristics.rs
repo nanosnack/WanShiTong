@@ -17,6 +17,7 @@ mod last_resort_titles;
 mod movie_directory;
 mod movie_title;
 mod names;
+mod nfo;
 mod parts;
 pub(super) mod ranks;
 mod runs;
@@ -48,6 +49,7 @@ use movie_title::{
     movie_title_without_numbering, movie_title_without_release_noise,
 };
 use names::{MOVIE_TITLE_REGEX, RELEASE_NUMBERING_REGEX};
+use nfo::{NfoPatterns, nfo_heuristic};
 use parts::{PART_REGEX, movie_title_before_part, part_from_file_name, parts_in_tags};
 use runs::{lone_numbered_episodes, numbered_runs};
 use series::{
@@ -309,6 +311,14 @@ fn run_narrow_phase_heuristics(
         &series_patterns,
         &Regex::new(NAME_ID_REGEX).unwrap(),
     );
+    // After the numbered runs and the samples too.
+    nfo_heuristic(
+        view,
+        &mut adder,
+        [ranks::NFO_EXTERNAL_ID, ranks::NFO_EPISODE, ranks::NFO_WORK],
+        &series_patterns,
+        &NfoPatterns::new(),
+    );
     file_heuristic(
         view,
         adder.with(
@@ -478,8 +488,7 @@ struct HeuristicView<'a> {
 }
 
 fn duration_from_container(facts: &FileFacts, mut adder: AddToSubject) -> Done {
-    // Not for text, e.g. an NFO, which ffprobe reads as ANSI art and gives a
-    // duration.
+    // Not for text, which ffprobe reads as ANSI art and gives a duration.
     if !facts.has_video_streams() {
         return None;
     }
@@ -519,7 +528,6 @@ fn sample_role(re: &Regex, path_id: &PathId, facts: &FileFacts, mut adder: AddTo
 // TODO: check jellyfin and plex naming rules
 // TODO: get external IDs from container tags
 // TODO: get season number from directory name
-// TODO: NFO files
 
 /// A file stem that is, or ends with, the word "sample".
 const SAMPLE_REGEX: &str = r"(?i)(?:^|[\s._-])sample$";
