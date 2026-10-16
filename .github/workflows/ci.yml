@@ -61,14 +61,3 @@ jobs:
             echo /nix/var/nix/profiles/default/bin >> "$GITHUB_PATH"
           fi
       - run: nix build --print-build-logs .#default
-      # Into the binary cache, where there is one: the repository variable
-      # ATTIC_ENDPOINT names it and an attic token opens it.
-      - name: Push to the binary cache
-        env:
-          ATTIC_ENDPOINT: ${{ vars.ATTIC_ENDPOINT }}
-          ATTIC_TOKEN: ${{ secrets.ATTIC_CI_PUSH_TOKEN }}
-        run: |
-          if [ -n "$ATTIC_ENDPOINT" ] && [ -n "$ATTIC_TOKEN" ] && command -v attic >/dev/null; then
-            attic login ci "$ATTIC_ENDPOINT" "$ATTIC_TOKEN"
-            attic push ci:nix-build-cache "$(nix path-info .#default)"
-          fi
