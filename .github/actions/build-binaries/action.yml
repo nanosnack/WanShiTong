@@ -1,0 +1,52 @@
+# Builds the static `wst` binaries for both architectures and lays them out in
+# dist/, as the release workflow's jobs need them on either host. A local
+# action, so the GitHub job and the Forgejo job share one definition: they
+# can't share a job, as GitHub refuses any job that names upload-artifact v3
+# and Forgejo any that uses v4.
+name: Build the release binaries
+description: Static wst binaries for x86_64 and aarch64 Linux, packaged in dist/
+runs:
+  using: composite
+  steps:
+    - name: Install nix if missing
+      shell: bash
+      run: |
+        if ! command -v nix >/dev/null; then
+          curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix \
+            | sh -s -- install linux --no-confirm
+          echo /nix/var/nix/profiles/default/bin >> "$GITHUB_PATH"
+        fi
+    - uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: release-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: release-${{ runner.os }}-
+
+    # The flake's release shell has the toolchain with the musl targets,
+    # and cargo-zigbuild, which links for either architecture from here.
+    - name: Build
+      shell: bash
+      run: |
+        nix develop .#release -c cargo zigbuild --locked --release -p wst \
+          --target x86_64-unknown-linux-musl --target aarch64-unknown-linux-musl
+
+    # dist/<arch>/wst, as the Dockerfile's build stage lays the binaries
+    # out, and a tarball of each with the licence, named by the version.
+    # In the same shell as the build: a host runner may have no tar or
+    # sha256sum of its own, and every nix shell has them.
+    - name: Package
+      shell: bash
+      run: |
+        nix develop .#release -c bash -euxo pipefail -c '
+          version="${GITHUB_REF_NAME#v}"
+          for pair in x86_64:amd64 aarch64:arm64; do
+            triple="${pair%%:*}-unknown-linux-musl"
+            arch="${pair##*:}"
+            install -D "target/$triple/release/wst" "dist/$arch/wst"
+            tar -czf "dist/wst-$version-$triple.tar.gz" -C "dist/$arch" wst -C ../.. LICENSE.md
+          done
+          cd dist && sha256sum -- *.tar.gz > sha256sums.txt
+        '
