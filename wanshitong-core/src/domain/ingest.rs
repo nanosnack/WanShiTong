@@ -105,12 +105,15 @@ pub struct IngestStats {
 ///
 /// What probing a file found: its MIME type, its media measurements, and
 /// ffprobe's output as given. All None for a file that wasn't probed, e.g.
-/// one whose measurements are reused.
+/// one whose measurements are reused. An NFO's text is read whether or not
+/// the file was probed, as it's small.
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Probed<'a> {
     pub mime: Option<&'a str>,
     pub media: Option<&'a FileMediaMeasurements>,
     pub ffprobe_json: Option<&'a str>,
+    /// The file's text, if it's an NFO: a release's, or a media server's.
+    pub nfo_text: Option<&'a str>,
 }
 
 /// A file an ingest saw but couldn't measure. The ingest went on without it,

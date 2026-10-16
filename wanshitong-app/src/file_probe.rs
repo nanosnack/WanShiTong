@@ -1,9 +1,11 @@
 mod disc_image;
 mod ffprobe;
 mod mime;
+mod nfo;
 
 pub use ffprobe::*;
 pub use mime::*;
+pub use nfo::*;
 
 use crate::file_probe::disc_image::is_disc_image;
 use crate::file_probe::mime::sniff_mime;
@@ -51,6 +53,16 @@ pub async fn probe_file(
         .expect("we never close this semaphore");
 
     let mime = sniff_mime(path).await?;
+
+    // An NFO is text, which ffprobe would read as ANSI art, and give a
+    // duration. Its text is read apart, as a measurement of its own.
+    if is_nfo_path(path) {
+        return Ok(FileProbeResult {
+            mime: preferred_mime(&mime, None),
+            ffprobe: None,
+            disc_image: None,
+        });
+    }
 
     // A disc image's MIME type is the image's, e.g. `application/x-iso9660-image`,
     // not its title's container's. Only Blu-rays' can be read so far, as our

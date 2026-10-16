@@ -53,6 +53,7 @@ async fn a_disc_image_is_a_disc_of_its_own() {
             mime: Some("application/octet-stream"),
             media: Some(&media),
             ffprobe_json: None,
+            nfo_text: None,
         },
     )
     .await

@@ -17,6 +17,10 @@
 /// Being in an extras directory outranks what knowledge bases say about a
 /// file on its own; only assertions outrank it.
 pub(super) const EXTRAS_DIRECTORY: f32 = 1000.0;
+/// An ID in an NFO file outranks one written in a name: a media server's
+/// manager writes the NFO for the work it identified, where a name's ID may
+/// be a directory's above, e.g. a series' for the movies in it.
+pub(super) const NFO_EXTERNAL_ID: f32 = 210.0;
 /// An ID written in a name outranks what a title finds, as anything a
 /// knowledge base finds by one does, but not an assertion.
 pub(super) const NAME_EXTERNAL_ID: f32 = 200.0;
@@ -45,6 +49,10 @@ pub(super) const SERIES_NAME_BEFORE_SEASON_EPISODE_NUMBER: f32 = 58.7;
 /// Below the series an extra's own name says it's of.
 pub(super) const SERIES_OF_NEARBY_EPISODES: f32 = 58.5;
 pub(super) const FILE_NAME_SEASON_EPISODE: f32 = 58.0;
+/// Just below the file name's explicit marker: an NFO's season and episode
+/// were scraped from the name, usually, and an NFO left over from a file
+/// renamed since is stale where the name isn't.
+pub(super) const NFO_EPISODE: f32 = 57.9;
 /// Above an episode without a season, as the directory corroborates this
 /// one's season, where it only assumes the other's episode is numbered within
 /// it, e.g. Perry Mason's `515` and `E138`, which is numbered through the
@@ -60,6 +68,10 @@ pub(super) const SEASON_DIRECTORY: f32 = 57.0;
 pub(super) const SERIES_SPECIAL: f32 = 56.0;
 /// A numbered run of videos that aren't feature length.
 pub(super) const EPISODE_RUN: f32 = 55.0;
+/// An NFO's title, year and kind of work: a media server's manager wrote the
+/// work's, where a directory is named after the release. Below the evidence
+/// that a video is an episode, which an NFO's `<movie>` can't make a movie.
+pub(super) const NFO_WORK: f32 = 51.0;
 
 pub(super) const MOVIE_DIRECTORY: f32 = 50.0;
 pub(super) const CONTAINER_DURATION: f32 = 10.0;
@@ -145,8 +157,9 @@ mod tests {
     use super::*;
 
     /// The table above, in its order. A new rank goes in both.
-    const HIGHEST_FIRST: [f32; 46] = [
+    const HIGHEST_FIRST: [f32; 49] = [
         EXTRAS_DIRECTORY,
+        NFO_EXTERNAL_ID,
         NAME_EXTERNAL_ID,
         DISC,
         SAMPLE,
@@ -156,12 +169,14 @@ mod tests {
         SERIES_NAME_BEFORE_SEASON_EPISODE_NUMBER,
         SERIES_OF_NEARBY_EPISODES,
         FILE_NAME_SEASON_EPISODE,
+        NFO_EPISODE,
         SEASON_EPISODE_NUMBER,
         EPISODE_IN_PARENTHESES,
         FILE_NAME_EPISODE,
         SEASON_DIRECTORY,
         SERIES_SPECIAL,
         EPISODE_RUN,
+        NFO_WORK,
         MOVIE_DIRECTORY,
         CONTAINER_DURATION,
         FEATURE_RUN,

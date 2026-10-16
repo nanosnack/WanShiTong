@@ -4,6 +4,7 @@ mod episodes;
 mod errors;
 mod extras;
 mod movies;
+mod nfo;
 mod parts;
 mod runs;
 mod series;
@@ -57,7 +58,15 @@ fn file(row_id: i64, rel_path: &str) -> (PathId, FileFacts) {
         mime_type: None,
         media: None,
         disc: None,
+        nfo_text: None,
     };
+    (path_id, facts)
+}
+
+/// An NFO file, with `text` in it.
+fn nfo(row_id: i64, rel_path: &str, text: &str) -> (PathId, FileFacts) {
+    let (path_id, mut facts) = file(row_id, rel_path);
+    facts.nfo_text = Some(text.into());
     (path_id, facts)
 }
 

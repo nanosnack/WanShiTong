@@ -1,6 +1,6 @@
 use crate::{
     data_source_types::DataSourceProbe,
-    file_probe::{FFProbeTool, FileProbeResult, MAX_CONCURRENT_PROBES, probe_file},
+    file_probe::{FFProbeTool, FileProbeResult, MAX_CONCURRENT_PROBES, probe_file, read_nfo_text},
     ingest::IngestProgressReporter,
 };
 use std::{
@@ -129,10 +129,24 @@ impl DataSourceProbe for FileSystemProbe {
                 MediaMeasurement::New(task)
             };
 
+            // An NFO's text is read every ingest, whether or not its media
+            // measurement is reused, as it's small. One that can't be read
+            // is left out, like a file that can't be probed.
+            let nfo_text = match read_nfo_text(&path, meta.len()).await {
+                Ok(nfo_text) => nfo_text,
+                Err(e) => {
+                    sink.file_failure(&rel_path, IngestFailureStage::Probe, &format!("{e:#}"))
+                        .await
+                        .map_err(CoreError::into_error)?;
+                    continue;
+                }
+            };
+
             probe_tasks.push(FileMeasurements {
                 rel_path,
                 meta,
                 media_measurement,
+                nfo_text,
             });
         }
 
@@ -142,6 +156,7 @@ impl DataSourceProbe for FileSystemProbe {
             rel_path,
             meta,
             media_measurement,
+            nfo_text,
         } in probe_tasks
         {
             let mut file = FileMeasurement {
@@ -201,6 +216,7 @@ impl DataSourceProbe for FileSystemProbe {
                 mime: mime.as_deref(),
                 media: media.as_ref(),
                 ffprobe_json: ffprobe_json.as_deref(),
+                nfo_text: nfo_text.as_deref(),
             };
             sink.file(&rel_path, &file, probed)
                 .await
@@ -222,6 +238,8 @@ struct FileMeasurements {
     rel_path: PathBuf,
     meta: std::fs::Metadata,
     media_measurement: MediaMeasurement,
+    /// The file's text, if it's an NFO.
+    nfo_text: Option<String>,
 }
 
 enum MediaMeasurement {

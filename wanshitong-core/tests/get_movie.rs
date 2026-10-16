@@ -65,6 +65,7 @@ async fn shows_media_measurements_reused_from_an_earlier_ingest() {
             mime: Some("video/x-matroska"),
             media: Some(&media),
             ffprobe_json: None,
+            nfo_text: None,
         },
     )
     .await

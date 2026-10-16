@@ -144,6 +144,7 @@ pub fn facts_from_paths(files: &[CorpusFile]) -> Vec<(PathId, FileFacts)> {
                 mime_type,
                 media,
                 disc,
+                nfo_text: None,
             };
             (path_id, facts)
         })
