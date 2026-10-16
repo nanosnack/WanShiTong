@@ -123,6 +123,8 @@ jobs:
           path: dist
       - uses: softprops/action-gh-release@v2
         with:
+          # A version with a prerelease part, e.g. 1.0.0-beta.1, is a prerelease.
+          prerelease: ${{ contains(github.ref_name, '-') }}
           files: |
             dist/*.tar.gz
             dist/sha256sums.txt
