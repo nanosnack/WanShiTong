@@ -20,10 +20,19 @@
       crane,
       ...
     }:
+    let
+      # Not x86_64-darwin: this nixpkgs has dropped it, and importing it for
+      # that system throws, which breaks `nix flake show` for everyone.
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "aarch64-darwin"
+      ];
+    in
     {
       nixosModules.default = import ./nix/module.nix self;
     }
-    // flake-utils.lib.eachDefaultSystem (
+    // flake-utils.lib.eachSystem systems (
       system:
       let
         pkgs = import nixpkgs {

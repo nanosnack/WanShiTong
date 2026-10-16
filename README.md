@@ -83,6 +83,13 @@ Add this repository as a flake input, import its module
 (`wanshitong.nixosModules.default`), and enable the service:
 
 ```nix
+inputs.wanshitong = {
+  url = "github:nanosnack/WanShiTong";
+  inputs.nixpkgs.follows = "nixpkgs"; # optional: build with your nixpkgs
+};
+```
+
+```nix
 services.wanshitong = {
   enable = true;
   settings.host = "0.0.0.0";      # listen beyond localhost
