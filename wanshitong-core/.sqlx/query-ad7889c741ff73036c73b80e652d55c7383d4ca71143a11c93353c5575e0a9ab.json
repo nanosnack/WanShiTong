@@ -1,0 +1,26 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT id AS \"id!: DataSourceRowId\", deleted_at\n        FROM data_sources\n        WHERE uuid = ?\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: DataSourceRowId",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "deleted_at",
+        "ordinal": 1,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      true,
+      true
+    ]
+  },
+  "hash": "ad7889c741ff73036c73b80e652d55c7383d4ca71143a11c93353c5575e0a9ab"
+}

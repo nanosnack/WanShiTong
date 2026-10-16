@@ -1,0 +1,86 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            m.id AS \"id!\",\n            m.title,\n            m.release_year,\n            m.tmdb_id,\n            m.imdb_id,\n            mf.role,\n            mf.manifestation AS \"manifestation: u32\",\n            mf.part AS \"part: u32\",\n            me.edition,\n            fm.rel_path,\n            fs.root_path,\n            EXISTS (\n                SELECT 1 FROM discs d WHERE d.index_file_id = fm.id\n            ) AS \"disc!: bool\"\n        FROM movies m\n        JOIN movie_files mf\n            ON mf.movie_id = m.id\n        LEFT JOIN movie_expressions me\n            ON me.id = mf.expression_id\n        JOIN file_measurements fm\n            ON fm.id = mf.file_id\n        JOIN fs_data_sources fs\n            ON fs.id = fm.data_source_id\n        WHERE m.interpretation_id = ?1\n        ORDER BY m.id, mf.id\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "title",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "release_year",
+        "ordinal": 2,
+        "type_info": "Integer"
+      },
+      {
+        "name": "tmdb_id",
+        "ordinal": 3,
+        "type_info": "Integer"
+      },
+      {
+        "name": "imdb_id",
+        "ordinal": 4,
+        "type_info": "Text"
+      },
+      {
+        "name": "role",
+        "ordinal": 5,
+        "type_info": "Text"
+      },
+      {
+        "name": "manifestation: u32",
+        "ordinal": 6,
+        "type_info": "Integer"
+      },
+      {
+        "name": "part: u32",
+        "ordinal": 7,
+        "type_info": "Integer"
+      },
+      {
+        "name": "edition",
+        "ordinal": 8,
+        "type_info": "Text"
+      },
+      {
+        "name": "rel_path",
+        "ordinal": 9,
+        "type_info": "Text"
+      },
+      {
+        "name": "root_path",
+        "ordinal": 10,
+        "type_info": "Text"
+      },
+      {
+        "name": "disc!: bool",
+        "ordinal": 11,
+        "type_info": "Null"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      null
+    ]
+  },
+  "hash": "0fe9d94d53e6c8e9df4c23d0ca5744d7d896e7459fe67f3c38a5a4ff6e99b294"
+}

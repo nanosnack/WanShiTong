@@ -1,0 +1,45 @@
+[workspace]
+members = [
+  "ffprobe-types",
+  "wanshitong-api",
+  "wanshitong-app",
+  "wanshitong-client",
+  "wanshitong-core",
+  "wanshitong-web",
+  "wst",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+license = "PolyForm-Noncommercial-1.0.0"
+repository = "https://github.com/nanosnack/WanShiTong"
+
+[workspace.dependencies]
+anyhow = "1.0.100"
+async-trait = "0.1.89"
+axum = "0.8.8"
+derive_more = "2.1.1"
+error-stack = { version = "0.8.0", features = ["spantrace"] }
+futures = "0.3.31"
+http-cache = { git = "https://github.com/Adjective-Object/http-cache", rev = "59825cfefdf5f2c66bde2245b5efde990e8a2569", default-features = false }
+http-cache-reqwest = { git = "https://github.com/Adjective-Object/http-cache", rev = "59825cfefdf5f2c66bde2245b5efde990e8a2569" }
+jiff = "0.2.18"
+regex = "1.12.2"
+reqwest = { version = "0.13.1", features = ["json"] }
+reqwest-middleware = "0.5.0"
+reqwest-retry = "0.9.0"
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.149"
+sqlx = { version = "0.8.6", features = ["runtime-tokio", "sqlite", "uuid"] }
+tempfile = "3.24.0"
+thiserror = "2.0.17"
+tokio = "1.49.0"
+tracing = "0.1.44"
+tracing-error = "0.2.1"
+tracing-subscriber = "0.3.22"
+unicode-normalization = "0.1.25"
+utoipa = { version = "5.4.0", features = ["uuid"] }
+uuid = { version = "1.19.0", features = ["serde", "v4"] }
+walkdir = "2.5.0"
+zstd = "0.13.3"

@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT config\n        FROM config_snapshots\n        WHERE id = ?\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "config",
+        "ordinal": 0,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "4851f7ee45d3389a9f7b2aa5815aca0bc0cc0706d4d9c7c5c08e971d67a0a79f"
+}

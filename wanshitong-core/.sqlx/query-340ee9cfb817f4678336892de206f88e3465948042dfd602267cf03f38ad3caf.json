@@ -1,0 +1,38 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            ds.uuid AS \"data_source!: DataSourceUuid\",\n            f.rel_path,\n            f.stage AS \"stage!: IngestFailureStage\",\n            f.error\n        FROM ingest_file_failures f\n        JOIN ingests i ON i.id = f.ingest_id\n        JOIN data_sources ds ON ds.id = i.data_source_id\n        WHERE i.uuid = ?\n        ORDER BY f.id\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "data_source!: DataSourceUuid",
+        "ordinal": 0,
+        "type_info": "Blob"
+      },
+      {
+        "name": "rel_path",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "stage!: IngestFailureStage",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "error",
+        "ordinal": 3,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "340ee9cfb817f4678336892de206f88e3465948042dfd602267cf03f38ad3caf"
+}

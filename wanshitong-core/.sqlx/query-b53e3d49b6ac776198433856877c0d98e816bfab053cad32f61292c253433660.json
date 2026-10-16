@@ -1,0 +1,62 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            c.uuid AS \"uuid!: ChangesetUuid\",\n            c.author,\n            c.description,\n            c.state,\n            c.created_at,\n            c.closed_at,\n            (\n                SELECT COUNT(*)\n                FROM assertion_groups g\n                WHERE g.changeset_id = c.id AND EXISTS (\n                    SELECT 1 FROM assertions a\n                    WHERE a.group_id = g.id\n                        AND (a.retracted_at IS NULL OR c.state != 'open')\n                )\n            ) AS \"assertion_count!: i64\",\n            (\n                SELECT COUNT(*) FROM changeset_retractions r WHERE r.changeset_id = c.id\n            ) AS \"retraction_count!: i64\"\n        FROM changesets c\n        WHERE ?1 IS NULL OR c.state = ?1\n        ORDER BY c.created_at DESC, c.id DESC\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "uuid!: ChangesetUuid",
+        "ordinal": 0,
+        "type_info": "Blob"
+      },
+      {
+        "name": "author",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "description",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "state",
+        "ordinal": 3,
+        "type_info": "Text"
+      },
+      {
+        "name": "created_at",
+        "ordinal": 4,
+        "type_info": "Integer"
+      },
+      {
+        "name": "closed_at",
+        "ordinal": 5,
+        "type_info": "Integer"
+      },
+      {
+        "name": "assertion_count!: i64",
+        "ordinal": 6,
+        "type_info": "Integer"
+      },
+      {
+        "name": "retraction_count!: i64",
+        "ordinal": 7,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false
+    ]
+  },
+  "hash": "b53e3d49b6ac776198433856877c0d98e816bfab053cad32f61292c253433660"
+}

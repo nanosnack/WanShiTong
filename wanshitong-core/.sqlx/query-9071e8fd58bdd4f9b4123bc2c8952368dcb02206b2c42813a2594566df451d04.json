@@ -1,0 +1,26 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT id AS \"id!\", uuid AS \"uuid!: InterpretationUuid\"\n        FROM interpretations\n        WHERE changeset_id = ? AND error IS NULL AND build = ?\n        ORDER BY started_at DESC, id DESC\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "uuid!: InterpretationUuid",
+        "ordinal": 1,
+        "type_info": "Blob"
+      }
+    ],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "9071e8fd58bdd4f9b4123bc2c8952368dcb02206b2c42813a2594566df451d04"
+}

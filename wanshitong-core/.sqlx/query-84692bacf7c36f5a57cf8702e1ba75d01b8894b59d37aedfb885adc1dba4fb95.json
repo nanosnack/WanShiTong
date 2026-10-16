@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        INSERT INTO ingests (uuid, data_source_id, started_at, config_id)\n        VALUES (?, ?, ?, ?)\n        RETURNING id AS \"id!: _\"\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: _",
+        "ordinal": 0,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 4
+    },
+    "nullable": [
+      true
+    ]
+  },
+  "hash": "84692bacf7c36f5a57cf8702e1ba75d01b8894b59d37aedfb885adc1dba4fb95"
+}

@@ -1,0 +1,26 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            ds.uuid AS \"data_source_uuid!: DataSourceUuid\",\n            i.uuid AS \"ingest_uuid!: IngestUuid\"\n        FROM data_sources ds\n        JOIN (\n            SELECT data_source_id, MAX(id) AS ingest_id\n            FROM ingests\n            WHERE success = 1\n            GROUP BY data_source_id\n        ) latest\n            ON latest.data_source_id = ds.id\n        JOIN ingests i\n            ON i.id = latest.ingest_id\n        WHERE ds.deleted_at IS NULL\n        ORDER BY ds.created_at ASC\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "data_source_uuid!: DataSourceUuid",
+        "ordinal": 0,
+        "type_info": "Blob"
+      },
+      {
+        "name": "ingest_uuid!: IngestUuid",
+        "ordinal": 1,
+        "type_info": "Blob"
+      }
+    ],
+    "parameters": {
+      "Right": 0
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "8e777fecf695c808481dafc80bf9c128ccd3e0b35ce7403b4aa6dff78b8ced64"
+}

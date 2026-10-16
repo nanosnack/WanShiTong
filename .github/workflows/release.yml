@@ -1,0 +1,168 @@
+# Releases a tag `v<version>`: static Linux binaries, a multi-platform
+# container image, and a release holding the binaries. Written for GitHub
+# Actions, which Forgejo Actions runs too; the binaries need only nix, so they
+# build on a Forgejo host runner. The image needs Docker, which GitHub's
+# runners have, so it is built there; and the release step goes by the host.
+#
+# Every job's `runs-on` picks the runner by the host, the jobs guarded by an
+# `if` included: Forgejo's runner, not its server, evaluates a job's `if`, so
+# a job that names a label no runner has waits forever instead of being
+# skipped. Forgejo warns that the GitHub-only jobs' `permissions` are ignored;
+# they are, harmlessly, as those jobs don't run there.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+env:
+  CARGO_TERM_COLOR: always
+  # The image, at the host's registry: ghcr.io on GitHub, the repository
+  # variable REGISTRY on Forgejo. Named for the repository, lowercased by the
+  # image job, as registries require.
+  REGISTRY: ${{ github.server_url == 'https://github.com' && 'ghcr.io' || vars.REGISTRY }}
+  IMAGE: ${{ github.repository }}
+
+jobs:
+  binaries:
+    name: Static binaries
+    runs-on: ${{ github.server_url == 'https://github.com' && 'ubuntu-latest' || 'role-ci-check' }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install nix if missing
+        run: |
+          if ! command -v nix >/dev/null; then
+            curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix \
+              | sh -s -- install linux --no-confirm
+            echo /nix/var/nix/profiles/default/bin >> "$GITHUB_PATH"
+          fi
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: release-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: release-${{ runner.os }}-
+
+      # The flake's release shell has the toolchain with the musl targets,
+      # and cargo-zigbuild, which links for either architecture from here.
+      - name: Build
+        run: |
+          nix develop .#release -c cargo zigbuild --locked --release -p wst \
+            --target x86_64-unknown-linux-musl --target aarch64-unknown-linux-musl
+
+      # dist/<arch>/wst, as the Dockerfile's build stage lays the binaries
+      # out, and a tarball of each with the licence, named by the version.
+      # In the same shell as the build: a host runner may have no tar or
+      # sha256sum of its own, and every nix shell has them.
+      - name: Package
+        run: |
+          nix develop .#release -c bash -euxo pipefail -c '
+            version="${GITHUB_REF_NAME#v}"
+            for pair in x86_64:amd64 aarch64:arm64; do
+              triple="${pair%%:*}-unknown-linux-musl"
+              arch="${pair##*:}"
+              install -D "target/$triple/release/wst" "dist/$arch/wst"
+              tar -czf "dist/wst-$version-$triple.tar.gz" -C "dist/$arch" wst -C ../.. LICENSE.md
+            done
+            cd dist && sha256sum -- *.tar.gz > sha256sums.txt
+          '
+      # Forgejo refuses upload-artifact v4 (it takes any server but github.com
+      # for GHES, which v4 doesn't support) and GitHub has retired v3, so the
+      # step goes by the host. Both versions fetch from either host.
+      - uses: actions/upload-artifact@v4
+        if: github.server_url == 'https://github.com'
+        with:
+          name: dist
+          path: dist
+      - uses: actions/upload-artifact@v3
+        if: github.server_url != 'https://github.com'
+        with:
+          name: dist
+          path: dist
+
+  image:
+    name: Container image
+    runs-on: ${{ github.server_url == 'https://github.com' && 'ubuntu-latest' || 'role-ci-check' }}
+    needs: binaries
+    # Needs Docker, which only GitHub's runners have. Its actions are
+    # fetched whether its steps run or not, so the job as a whole is skipped
+    # elsewhere (on the runner the host has, see the top).
+    if: github.server_url == 'https://github.com'
+    # To push to ghcr.io with the workflow's token.
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      # The binaries are already built; the image's other platform only needs
+      # emulation for its package install.
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: image
+        run: echo "name=${REGISTRY}/${IMAGE,,}" >> "$GITHUB_OUTPUT"
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ steps.image.outputs.name }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          build-contexts: build=dist
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  # One of these runs, by the host: the release actions aren't shared, and a
+  # job's actions are fetched whether its steps run or not, so each is a job
+  # of its own.
+  release-forgejo:
+    name: Release (Forgejo)
+    runs-on: ${{ github.server_url == 'https://github.com' && 'ubuntu-latest' || 'role-ci-check' }}
+    needs: binaries
+    if: github.server_url != 'https://github.com'
+    steps:
+      # v3, as uploaded: v3 and v4 artifacts are separate APIs.
+      - uses: actions/download-artifact@v3
+        with:
+          name: dist
+          path: dist
+      - run: rm -r dist/amd64 dist/arm64
+      - uses: actions/forgejo-release@v2
+        with:
+          direction: upload
+          release-dir: dist
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  release-github:
+    name: Release (GitHub)
+    runs-on: ${{ github.server_url == 'https://github.com' && 'ubuntu-latest' || 'role-ci-check' }}
+    needs: [binaries, image]
+    if: github.server_url == 'https://github.com'
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.tar.gz
+            dist/sha256sums.txt

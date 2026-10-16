@@ -1,0 +1,38 @@
+{
+  "db_name": "SQLite",
+  "query": "\n            SELECT\n                i.id AS \"ingest_id!: IngestRowId\",\n                ds.id AS \"data_source_id!: DataSourceRowId\",\n                ds.deleted_at,\n                i.success\n            FROM ingests i\n            JOIN data_sources ds\n                ON ds.id = i.data_source_id\n            WHERE ds.uuid = ? AND i.uuid = ?\n            ",
+  "describe": {
+    "columns": [
+      {
+        "name": "ingest_id!: IngestRowId",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "data_source_id!: DataSourceRowId",
+        "ordinal": 1,
+        "type_info": "Integer"
+      },
+      {
+        "name": "deleted_at",
+        "ordinal": 2,
+        "type_info": "Integer"
+      },
+      {
+        "name": "success",
+        "ordinal": 3,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": [
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  "hash": "1b8fb0bbf0aa7bdcfa99bfb384a316b111738613f9f509d7693a211d84495038"
+}

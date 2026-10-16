@@ -1,0 +1,38 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            ds.uuid AS \"data_source_uuid!: DataSourceUuid\",\n            fm.rel_path,\n            mf.role,\n            al.data AS \"audit_log?\"\n        FROM movie_files mf\n        JOIN file_measurements fm\n            ON fm.id = mf.file_id\n        JOIN data_sources ds\n            ON ds.id = fm.data_source_id\n        LEFT JOIN audit_logs al\n            ON al.file_id = mf.file_id\n            AND al.interpretation_id = ?2\n        WHERE mf.movie_id = ?1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "data_source_uuid!: DataSourceUuid",
+        "ordinal": 0,
+        "type_info": "Blob"
+      },
+      {
+        "name": "rel_path",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "role",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "audit_log?",
+        "ordinal": 3,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      false
+    ]
+  },
+  "hash": "c6c5d79fc7502c8258f251d3582cf41c31df0cab67ff8ba7b727efc0de312e48"
+}

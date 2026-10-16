@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        INSERT INTO interpretations (uuid, name, started_at, changeset_id, build)\n        VALUES (?, ?, ?, ?, ?)\n        RETURNING id AS \"id: _\"\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id: _",
+        "ordinal": 0,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 5
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "1a5009fc5004d3ba414aa22ca5e3a8b2dc64d48ae55493924cb70389d6796f1f"
+}

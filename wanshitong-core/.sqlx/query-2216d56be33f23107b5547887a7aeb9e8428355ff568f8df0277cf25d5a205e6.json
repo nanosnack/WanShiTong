@@ -1,0 +1,62 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            s.id AS \"id!: TvSeriesRowId\",\n            s.uuid AS \"uuid!: TvSeriesUuid\",\n            s.name,\n            s.sort_name AS \"sort_name!\",\n            s.tmdb_id,\n            s.tmdb_poster_path,\n            (\n                SELECT count(*)\n                FROM tv_seasons\n                WHERE series_id = s.id AND number IS NOT NULL\n            ) AS \"season_count!: i64\",\n            (\n                SELECT count(*)\n                FROM tv_episodes e\n                JOIN tv_seasons se\n                    ON se.id = e.season_id\n                WHERE se.series_id = s.id\n            ) AS \"episode_count!: i64\"\n        FROM tv_series s\n        WHERE\n            s.interpretation_id = ?1\n            AND (?2 IS NULL OR lower(s.name) LIKE '%' || lower(?2) || '%')\n            AND (\n                ?3 IS NULL\n                OR (\n                    s.sort_name > ?3\n                    OR (s.sort_name = ?3 AND s.id >= ?4)\n                )\n            )\n        ORDER BY s.sort_name, s.id\n        LIMIT ?5;\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: TvSeriesRowId",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "uuid!: TvSeriesUuid",
+        "ordinal": 1,
+        "type_info": "Blob"
+      },
+      {
+        "name": "name",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "sort_name!",
+        "ordinal": 3,
+        "type_info": "Text"
+      },
+      {
+        "name": "tmdb_id",
+        "ordinal": 4,
+        "type_info": "Integer"
+      },
+      {
+        "name": "tmdb_poster_path",
+        "ordinal": 5,
+        "type_info": "Text"
+      },
+      {
+        "name": "season_count!: i64",
+        "ordinal": 6,
+        "type_info": "Null"
+      },
+      {
+        "name": "episode_count!: i64",
+        "ordinal": 7,
+        "type_info": "Null"
+      }
+    ],
+    "parameters": {
+      "Right": 5
+    },
+    "nullable": [
+      true,
+      false,
+      false,
+      false,
+      true,
+      true,
+      null,
+      null
+    ]
+  },
+  "hash": "2216d56be33f23107b5547887a7aeb9e8428355ff568f8df0277cf25d5a205e6"
+}

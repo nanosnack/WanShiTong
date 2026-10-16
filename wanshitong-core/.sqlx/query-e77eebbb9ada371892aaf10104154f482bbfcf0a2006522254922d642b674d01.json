@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        UPDATE system_state\n        SET onboarding_steps_done = onboarding_steps_done + 1\n        WHERE id = 1 AND onboarding_steps_done = ?\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": []
+  },
+  "hash": "e77eebbb9ada371892aaf10104154f482bbfcf0a2006522254922d642b674d01"
+}

@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "INSERT INTO fs_data_sources (id, root_path, follow_symlinks) VALUES (?, ?, ?)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 3
+    },
+    "nullable": []
+  },
+  "hash": "e446e5e74e05beb03ba9ff6ebdd921f4dfbe6b70959c4fbfcfa034567d1ace5b"
+}

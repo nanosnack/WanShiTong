@@ -1,0 +1,13 @@
+{
+  // Compiled by build.rs, which sets --outDir. Scripts load as classic
+  // (non-module) scripts, so they have no imports or exports.
+  "compilerOptions": {
+    "target": "es2022",
+    "lib": ["es2022", "dom"],
+    "module": "preserve",
+    "strict": true,
+    "noEmitOnError": true,
+    "skipLibCheck": true
+  },
+  "include": ["*.ts"]
+}

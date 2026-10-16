@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        INSERT INTO system_state (latest_config_snapshot_id)\n        VALUES (last_insert_rowid());\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 0
+    },
+    "nullable": []
+  },
+  "hash": "cf498075bca64c1b9ced4d8b05ae6a7e75791133631c864576a2677d08df1e6c"
+}

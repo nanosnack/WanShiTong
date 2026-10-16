@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "\n            INSERT INTO tv_seasons (series_id, number)\n            VALUES (?, ?)\n            ON CONFLICT DO UPDATE SET number = EXCLUDED.number\n            RETURNING id AS \"id!: TvSeasonRowId\"\n            ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: TvSeasonRowId",
+        "ordinal": 0,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "d0515e8ca1f96be0af73726d74c718f30d4ea008f54200cb43b054cdc4ca5e4e"
+}

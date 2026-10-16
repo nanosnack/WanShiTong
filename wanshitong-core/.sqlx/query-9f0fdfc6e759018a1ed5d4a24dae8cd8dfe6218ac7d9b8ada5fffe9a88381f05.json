@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "\n            INSERT INTO assertions\n                (uuid, group_id, data_source_id, rel_path, claim, created_at)\n            VALUES (?, ?, ?, ?, ?, ?)\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 6
+    },
+    "nullable": []
+  },
+  "hash": "9f0fdfc6e759018a1ed5d4a24dae8cd8dfe6218ac7d9b8ada5fffe9a88381f05"
+}

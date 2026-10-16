@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT latest_config_snapshot_id AS \"latest_config_snapshot_id!: _\"\n        FROM system_state\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "latest_config_snapshot_id!: _",
+        "ordinal": 0,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 0
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "594c80681ddc2759a1753cb2164053a97a45438b14fbfb37431de4ceaa7099a2"
+}

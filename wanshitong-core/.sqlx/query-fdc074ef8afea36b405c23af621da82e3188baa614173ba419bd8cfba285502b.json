@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "\n                INSERT INTO file_media_measurements (\n                    file_measurement_id, mime_type, data, ffprobe_json\n                )\n                VALUES (?, ?, ?, ?)\n                RETURNING id as \"id!: _\"\n                ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: _",
+        "ordinal": 0,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 4
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "fdc074ef8afea36b405c23af621da82e3188baa614173ba419bd8cfba285502b"
+}

@@ -1,0 +1,104 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            i.id AS \"id!: IngestRowId\",\n            i.uuid AS \"uuid!: IngestUuid\",\n            i.started_at,\n            i.files_seen,\n            i.files_probed,\n            i.files_recorded,\n            i.media_files_recorded,\n            i.files_failed,\n            i.stopped_at,\n            i.success,\n            ds.uuid AS \"data_source_uuid!: DataSourceUuid\",\n            ds.name AS data_source_name,\n            ds.created_at AS data_source_created_at,\n            fs.root_path,\n            fs.follow_symlinks\n        FROM ingests i\n        JOIN data_sources ds\n            ON ds.id = i.data_source_id\n        JOIN fs_data_sources fs\n            ON fs.id = ds.id\n        WHERE ?1 IS NULL OR i.uuid = ?1\n        ORDER BY i.started_at DESC\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: IngestRowId",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "uuid!: IngestUuid",
+        "ordinal": 1,
+        "type_info": "Blob"
+      },
+      {
+        "name": "started_at",
+        "ordinal": 2,
+        "type_info": "Integer"
+      },
+      {
+        "name": "files_seen",
+        "ordinal": 3,
+        "type_info": "Integer"
+      },
+      {
+        "name": "files_probed",
+        "ordinal": 4,
+        "type_info": "Integer"
+      },
+      {
+        "name": "files_recorded",
+        "ordinal": 5,
+        "type_info": "Integer"
+      },
+      {
+        "name": "media_files_recorded",
+        "ordinal": 6,
+        "type_info": "Integer"
+      },
+      {
+        "name": "files_failed",
+        "ordinal": 7,
+        "type_info": "Integer"
+      },
+      {
+        "name": "stopped_at",
+        "ordinal": 8,
+        "type_info": "Integer"
+      },
+      {
+        "name": "success",
+        "ordinal": 9,
+        "type_info": "Integer"
+      },
+      {
+        "name": "data_source_uuid!: DataSourceUuid",
+        "ordinal": 10,
+        "type_info": "Blob"
+      },
+      {
+        "name": "data_source_name",
+        "ordinal": 11,
+        "type_info": "Text"
+      },
+      {
+        "name": "data_source_created_at",
+        "ordinal": 12,
+        "type_info": "Integer"
+      },
+      {
+        "name": "root_path",
+        "ordinal": 13,
+        "type_info": "Text"
+      },
+      {
+        "name": "follow_symlinks",
+        "ordinal": 14,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "391697adba919635e8b7f281e783822c106f241c0fd22f3320eb5a6369fdf28b"
+}

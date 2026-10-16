@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        INSERT INTO assertion_groups (uuid, created_at, changeset_id, rationale, confidence)\n        VALUES (?, ?, ?, ?, ?)\n        RETURNING id AS \"id!\"\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!",
+        "ordinal": 0,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 5
+    },
+    "nullable": [
+      true
+    ]
+  },
+  "hash": "7e75c39d6864d6b841f8699ef2957d6d08e59dda82ea663e0a5fa4f83c93c20d"
+}

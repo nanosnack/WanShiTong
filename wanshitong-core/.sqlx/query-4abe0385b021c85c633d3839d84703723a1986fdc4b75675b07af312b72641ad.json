@@ -1,0 +1,56 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            ds.uuid AS \"uuid!: DataSourceUuid\",\n            ds.name,\n            ds.created_at,\n            ds.deleted_at,\n            fs.root_path,\n            fs.follow_symlinks,\n\n            i.uuid AS \"latest_ingest_uuid?: IngestUuid\"\n        FROM data_sources ds\n        JOIN fs_data_sources fs\n            ON fs.id = ds.id\n\n        LEFT JOIN (\n            SELECT data_source_id, MAX(id) AS ingest_id\n            FROM ingests\n            GROUP BY data_source_id\n        ) latest_ingest\n            ON latest_ingest.data_source_id = ds.id\n        LEFT JOIN ingests i\n            ON i.id = latest_ingest.ingest_id\n\n        WHERE\n            ds.kind = 'filesystem'\n            AND (?1 IS NULL OR ds.uuid = ?1)\n            AND (?2 IS NULL OR (ds.deleted_at IS NOT NULL) = ?2)\n        ORDER BY ds.created_at ASC\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "uuid!: DataSourceUuid",
+        "ordinal": 0,
+        "type_info": "Blob"
+      },
+      {
+        "name": "name",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "created_at",
+        "ordinal": 2,
+        "type_info": "Integer"
+      },
+      {
+        "name": "deleted_at",
+        "ordinal": 3,
+        "type_info": "Integer"
+      },
+      {
+        "name": "root_path",
+        "ordinal": 4,
+        "type_info": "Text"
+      },
+      {
+        "name": "follow_symlinks",
+        "ordinal": 5,
+        "type_info": "Integer"
+      },
+      {
+        "name": "latest_ingest_uuid?: IngestUuid",
+        "ordinal": 6,
+        "type_info": "Blob"
+      }
+    ],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "4abe0385b021c85c633d3839d84703723a1986fdc4b75675b07af312b72641ad"
+}

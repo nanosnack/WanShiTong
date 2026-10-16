@@ -1,0 +1,104 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            v.uuid AS \"uuid!: ViewUuid\",\n            v.name,\n            v.created_at,\n            v.auto_refresh AS \"auto_refresh: bool\",\n            v.kind,\n            jv.root_path AS \"jellyfin_root_path?\",\n            pv.root_path AS \"plex_root_path?\",\n\n            vm.interpretation_id AS \"interpretation_id?: InterpretationRowId\",\n            vm.started_at AS \"started_at?\",\n            vm.stopped_at AS \"stopped_at?\",\n            vm.success AS \"success?\",\n            vm.links_created AS \"links_created?\",\n            vm.links_updated AS \"links_updated?\",\n            vm.links_removed AS \"links_removed?\",\n            vm.error AS \"error?\"\n        FROM views v\n        LEFT JOIN jellyfin_views jv\n            ON jv.id = v.id\n        LEFT JOIN plex_views pv\n            ON pv.id = v.id\n        LEFT JOIN view_materializations vm\n            ON vm.id = (\n                SELECT MAX(id)\n                FROM view_materializations\n                WHERE view_id = v.id\n            )\n        WHERE ?1 IS NULL OR v.uuid = ?1\n        ORDER BY v.created_at, v.id\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "uuid!: ViewUuid",
+        "ordinal": 0,
+        "type_info": "Blob"
+      },
+      {
+        "name": "name",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "created_at",
+        "ordinal": 2,
+        "type_info": "Integer"
+      },
+      {
+        "name": "auto_refresh: bool",
+        "ordinal": 3,
+        "type_info": "Integer"
+      },
+      {
+        "name": "kind",
+        "ordinal": 4,
+        "type_info": "Text"
+      },
+      {
+        "name": "jellyfin_root_path?",
+        "ordinal": 5,
+        "type_info": "Text"
+      },
+      {
+        "name": "plex_root_path?",
+        "ordinal": 6,
+        "type_info": "Text"
+      },
+      {
+        "name": "interpretation_id?: InterpretationRowId",
+        "ordinal": 7,
+        "type_info": "Integer"
+      },
+      {
+        "name": "started_at?",
+        "ordinal": 8,
+        "type_info": "Integer"
+      },
+      {
+        "name": "stopped_at?",
+        "ordinal": 9,
+        "type_info": "Integer"
+      },
+      {
+        "name": "success?",
+        "ordinal": 10,
+        "type_info": "Integer"
+      },
+      {
+        "name": "links_created?",
+        "ordinal": 11,
+        "type_info": "Integer"
+      },
+      {
+        "name": "links_updated?",
+        "ordinal": 12,
+        "type_info": "Integer"
+      },
+      {
+        "name": "links_removed?",
+        "ordinal": 13,
+        "type_info": "Integer"
+      },
+      {
+        "name": "error?",
+        "ordinal": 14,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  "hash": "863326272e4801c04dee2a87ad98ac0befc6c7e7f2beea7ed585275f162cf981"
+}

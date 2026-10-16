@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        DELETE FROM changeset_retractions\n        WHERE\n            changeset_id = ?\n            AND assertion_group_id IN (SELECT id FROM assertion_groups WHERE uuid = ?)\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": []
+  },
+  "hash": "b6689b83a42269425300365e1312c79b4bafbef5f1ceb4129ed1db8d426fd55e"
+}

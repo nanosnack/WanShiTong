@@ -1,0 +1,44 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            m.id AS \"id!: FileMeasurementRowId\",\n            m.data_source_id,\n            m.rel_path,\n            m.size,\n            m.media_measurements AS \"media_measurements?: String\"\n        FROM complete_file_measurements m\n        WHERE m.ingest_id = ?\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: FileMeasurementRowId",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "data_source_id",
+        "ordinal": 1,
+        "type_info": "Integer"
+      },
+      {
+        "name": "rel_path",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "size",
+        "ordinal": 3,
+        "type_info": "Integer"
+      },
+      {
+        "name": "media_measurements?: String",
+        "ordinal": 4,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      true,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "774576c0979b29319b228f481e07f14fa367d363f655e580a6add70e93e4c3ce"
+}

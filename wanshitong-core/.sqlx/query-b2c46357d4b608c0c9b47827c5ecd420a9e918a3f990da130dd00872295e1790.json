@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "\n            INSERT INTO mark_files (mark_id, data_source_id, rel_path)\n            VALUES (?, ?, ?)\n            ON CONFLICT DO NOTHING\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 3
+    },
+    "nullable": []
+  },
+  "hash": "b2c46357d4b608c0c9b47827c5ecd420a9e918a3f990da130dd00872295e1790"
+}

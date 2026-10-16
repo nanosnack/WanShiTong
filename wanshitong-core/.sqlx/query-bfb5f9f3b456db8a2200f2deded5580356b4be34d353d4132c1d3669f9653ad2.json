@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "UPDATE data_sources SET deleted_at = NULL WHERE uuid = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": []
+  },
+  "hash": "bfb5f9f3b456db8a2200f2deded5580356b4be34d353d4132c1d3669f9653ad2"
+}

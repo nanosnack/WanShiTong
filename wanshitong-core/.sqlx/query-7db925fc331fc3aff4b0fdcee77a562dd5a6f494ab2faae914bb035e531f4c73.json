@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT fm.id AS \"id!: FileMeasurementRowId\"\n        FROM file_measurements fm\n        JOIN interpretation_ingests ii\n            ON ii.ingest_id = fm.ingest_id\n        WHERE ii.interpretation_id = ?\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: FileMeasurementRowId",
+        "ordinal": 0,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      true
+    ]
+  },
+  "hash": "7db925fc331fc3aff4b0fdcee77a562dd5a6f494ab2faae914bb035e531f4c73"
+}

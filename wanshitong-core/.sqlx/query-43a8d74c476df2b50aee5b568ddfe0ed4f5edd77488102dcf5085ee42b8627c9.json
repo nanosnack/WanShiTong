@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "\n            INSERT INTO changeset_retractions (changeset_id, assertion_group_id)\n            VALUES (?, ?)\n            ON CONFLICT DO NOTHING\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": []
+  },
+  "hash": "43a8d74c476df2b50aee5b568ddfe0ed4f5edd77488102dcf5085ee42b8627c9"
+}

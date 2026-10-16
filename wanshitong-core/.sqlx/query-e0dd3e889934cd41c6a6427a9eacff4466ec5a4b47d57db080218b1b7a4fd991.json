@@ -1,0 +1,74 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        -- ?1 interpretation, ?2 work, ?3 identified, ?4 non_videos say which\n        -- files, in the clause list_files shares; ?5 and ?6 the folder's data\n        -- source and path prefix, ?7 and ?8 the cursor's data source name and\n        -- entry name, ?9 the limit.\n        WITH fact_ingests AS (\n            SELECT ingest_id, data_source_id\n            FROM interpretation_ingests\n            WHERE interpretation_id = ?1\n        ),\n        -- The files searched for, in the folder, by their paths in it: a range\n        -- of paths from the prefix up to it followed by the last code point,\n        -- which no path starts with in practice, so that the files' index\n        -- serves it (`substr` would make it a scan). A disc\n        -- is where its files are, e.g. `Film/BDMV`, rather than its index file,\n        -- and a disc image, e.g. `Film.iso`, is where it is.\n        matching AS (\n            SELECT\n                m.data_source_uuid,\n                m.data_source_name,\n                m.rel_path,\n                coalesce(d.size, m.size) AS size,\n                d.kind AS disc_kind,\n                d.duration_ms AS disc_duration_ms,\n                (SELECT count(*) FROM disc_files df WHERE df.disc_id = d.id) AS disc_member_count,\n                substr(\n                    CASE\n                        WHEN d.id IS NOT NULL AND (\n                            m.rel_path LIKE '%/index.bdmv' OR m.rel_path LIKE '%/VIDEO_TS.IFO'\n                        ) THEN substr(\n                            m.rel_path,\n                            1,\n                            length(m.rel_path)\n                                - CASE d.kind WHEN 'dvd' THEN length('VIDEO_TS.IFO') ELSE length('index.bdmv') END\n                                - 1\n                        )\n                        ELSE m.rel_path\n                    END,\n                    length(?6) + 1\n                ) AS rest\n            FROM complete_file_measurements m\n            JOIN fact_ingests fi\n                ON fi.ingest_id = m.ingest_id\n                AND fi.data_source_id = m.data_source_id\n            LEFT JOIN discs d\n                ON d.index_file_id = m.id\n            WHERE\n                (?5 IS NULL OR m.data_source_uuid = ?5)\n                AND m.rel_path >= ?6\n                AND m.rel_path < ?6 || char(1114111)\n                -- A disc's other files: its index file stands for them.\n                AND m.id NOT IN (SELECT file_id FROM disc_files)\n                -- A work's files, all of them, or else those the filter selects.\n                AND (?2 IS NULL OR m.id IN (SELECT file_id FROM work_files WHERE work_uuid = ?2))\n                AND (\n                    ?2 IS NOT NULL\n                    OR m.id IN (\n                        SELECT file_id\n                        FROM unidentified_videos\n                        WHERE interpretation_id = ?1\n                    )\n                    OR (?3 AND ?4)\n                    OR (\n                        ?3\n                        AND m.id IN (\n                            SELECT file_id FROM identified_files WHERE interpretation_id = ?1\n                        )\n                        AND m.id IN (SELECT file_id FROM video_files WHERE interpretation_id = ?1)\n                    )\n                    OR (\n                        ?4\n                        AND m.id NOT IN (\n                            SELECT file_id FROM video_files WHERE interpretation_id = ?1\n                        )\n                        AND m.id NOT IN (\n                            SELECT file_id FROM identified_files WHERE interpretation_id = ?1\n                        )\n                    )\n                )\n        ),\n        children AS (\n            SELECT\n                data_source_uuid,\n                data_source_name,\n                CASE instr(rest, '/')\n                    WHEN 0 THEN rest\n                    ELSE substr(rest, 1, instr(rest, '/') - 1)\n                END AS name,\n                instr(rest, '/') > 0 AS is_folder,\n                count(*) AS file_count,\n                max(size) AS size,\n                max(rel_path) AS file_path,\n                max(disc_kind) AS disc_kind,\n                max(disc_duration_ms) AS disc_duration_ms,\n                max(disc_member_count) AS disc_member_count\n            FROM matching\n            GROUP BY data_source_uuid, data_source_name, name, is_folder\n        )\n        SELECT\n            data_source_uuid AS \"data_source_uuid!: DataSourceUuid\",\n            data_source_name AS \"data_source_name!: String\",\n            name AS \"name!: String\",\n            CASE WHEN is_folder THEN ?6 || name ELSE file_path END AS \"path!: String\",\n            is_folder AS \"is_folder!: bool\",\n            file_count AS \"file_count!: i64\",\n            size AS \"size!: i64\",\n            disc_kind AS \"disc_kind?: String\",\n            disc_duration_ms AS \"disc_duration_ms?: i64\",\n            disc_member_count AS \"disc_member_count?: i64\"\n        FROM children\n        WHERE\n            ?8 IS NULL\n            OR (lower(name), name, data_source_name) > (lower(?8), ?8, ?7)\n        -- By name, ignoring case, folders and files together, whatever data\n        -- source they're in. A folder can't share a file's name.\n        ORDER BY\n            lower(name),\n            name,\n            data_source_name,\n            is_folder\n        LIMIT ?9\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "data_source_uuid!: DataSourceUuid",
+        "ordinal": 0,
+        "type_info": "Blob"
+      },
+      {
+        "name": "data_source_name!: String",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "name!: String",
+        "ordinal": 2,
+        "type_info": "Null"
+      },
+      {
+        "name": "path!: String",
+        "ordinal": 3,
+        "type_info": "Null"
+      },
+      {
+        "name": "is_folder!: bool",
+        "ordinal": 4,
+        "type_info": "Null"
+      },
+      {
+        "name": "file_count!: i64",
+        "ordinal": 5,
+        "type_info": "Null"
+      },
+      {
+        "name": "size!: i64",
+        "ordinal": 6,
+        "type_info": "Null"
+      },
+      {
+        "name": "disc_kind?: String",
+        "ordinal": 7,
+        "type_info": "Null"
+      },
+      {
+        "name": "disc_duration_ms?: i64",
+        "ordinal": 8,
+        "type_info": "Null"
+      },
+      {
+        "name": "disc_member_count?: i64",
+        "ordinal": 9,
+        "type_info": "Null"
+      }
+    ],
+    "parameters": {
+      "Right": 9
+    },
+    "nullable": [
+      false,
+      false,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+  "hash": "e0dd3e889934cd41c6a6427a9eacff4466ec5a4b47d57db080218b1b7a4fd991"
+}

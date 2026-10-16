@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "\n            SELECT i.uuid AS \"uuid!: IngestUuid\"\n            FROM interpretation_ingests ii\n            JOIN ingests i\n                ON i.id = ii.ingest_id\n            WHERE ii.interpretation_id = ?\n            ",
+  "describe": {
+    "columns": [
+      {
+        "name": "uuid!: IngestUuid",
+        "ordinal": 0,
+        "type_info": "Blob"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "c48f2dd824efb91ae103bda46ba863b123e0d53efba7b2030185941d38cd4e34"
+}

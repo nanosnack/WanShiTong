@@ -1,0 +1,74 @@
+# Wan Shi Tong as a systemd service, for Linux distributions other than NixOS
+# (which has the flake's module). To install:
+#
+#   install -m 0755 wst /usr/local/bin/wst
+#   useradd --system --home-dir /var/lib/wanshitong --shell /usr/sbin/nologin wanshitong
+#   install -m 0644 wanshitong.service /etc/systemd/system/wanshitong.service
+#   systemctl enable --now wanshitong
+#
+# ffprobe must be on PATH: install ffmpeg, or set ffprobe_path in config.toml.
+# The service only reads the library, at the paths listed below, so set them to
+# yours. It writes views where ViewPaths says, which must be writable by the
+# wanshitong user, e.g. owned by a group it's in:
+#
+#   usermod -aG media wanshitong
+#
+# Settings go in /etc/wanshitong/config.toml, which the service writes with the
+# defaults on its first start if it can, and in /etc/wanshitong/environment as
+# WST__<KEY>=..., which is where a TMDB token belongs.
+
+[Unit]
+Description=Wan Shi Tong media knowledge system
+Documentation=https://github.com/nanosnack/WanShiTong
+Wants=network-online.target
+After=network-online.target
+# The library and the view directories, so the service waits for them.
+RequiresMountsFor=/srv/media /srv/views
+
+[Service]
+ExecStart=/usr/local/bin/wst serve
+Restart=on-failure
+
+User=wanshitong
+Group=wanshitong
+# /etc/wanshitong, /var/lib/wanshitong and /var/cache/wanshitong, created by
+# systemd. The configuration directory is root's; the others are the user's.
+ConfigurationDirectory=wanshitong
+StateDirectory=wanshitong
+CacheDirectory=wanshitong
+Environment=WST_CONFIG_DIR=/etc/wanshitong
+Environment=WST_DATA_DIR=/var/lib/wanshitong
+Environment=WST_CACHE_DIR=/var/cache/wanshitong
+# Error reports in the log carry a backtrace.
+Environment=RUST_BACKTRACE=1
+EnvironmentFile=-/etc/wanshitong/environment
+
+# Hardening, as the NixOS module does it: the service sees the library
+# read-only and writes only its own directories and the views'.
+ProtectSystem=strict
+ProtectHome=true
+ReadOnlyPaths=/srv/media
+ReadWritePaths=/srv/views
+PrivateTmp=true
+PrivateDevices=true
+NoNewPrivileges=true
+CapabilityBoundingSet=
+LockPersonality=true
+ProtectClock=true
+ProtectControlGroups=true
+ProtectHostname=true
+ProtectKernelLogs=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ProtectProc=invisible
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

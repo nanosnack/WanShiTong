@@ -1,0 +1,4 @@
+# The Forgejo runner's label, so actionlint accepts it in runs-on.
+self-hosted-runner:
+  labels:
+    - role-ci-check

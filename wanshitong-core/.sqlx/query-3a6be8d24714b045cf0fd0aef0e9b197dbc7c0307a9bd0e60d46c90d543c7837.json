@@ -1,0 +1,44 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            xf.series_id AS \"work_id!\",\n            ds.uuid AS \"data_source_uuid!: DataSourceUuid\",\n            ds.name AS data_source_name,\n            fm.rel_path,\n            xf.disc AS \"disc!: bool\"\n        FROM tv_series_extra_files xf\n        JOIN tv_series s\n            ON s.id = xf.series_id\n        JOIN file_measurements fm\n            ON fm.id = xf.file_id\n        JOIN data_sources ds\n            ON ds.id = fm.data_source_id\n        WHERE s.interpretation_id = ?\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "work_id!",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "data_source_uuid!: DataSourceUuid",
+        "ordinal": 1,
+        "type_info": "Blob"
+      },
+      {
+        "name": "data_source_name",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "rel_path",
+        "ordinal": 3,
+        "type_info": "Text"
+      },
+      {
+        "name": "disc!: bool",
+        "ordinal": 4,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "3a6be8d24714b045cf0fd0aef0e9b197dbc7c0307a9bd0e60d46c90d543c7837"
+}

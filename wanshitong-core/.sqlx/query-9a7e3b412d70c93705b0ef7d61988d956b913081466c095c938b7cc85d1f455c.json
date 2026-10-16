@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        INSERT INTO views (uuid, name, kind, created_at, auto_refresh)\n        VALUES (?, ?, ?, ?, ?)\n        RETURNING id AS \"id: _\"\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id: _",
+        "ordinal": 0,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 5
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "9a7e3b412d70c93705b0ef7d61988d956b913081466c095c938b7cc85d1f455c"
+}

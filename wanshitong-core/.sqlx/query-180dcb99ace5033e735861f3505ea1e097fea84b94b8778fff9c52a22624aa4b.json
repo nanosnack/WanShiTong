@@ -1,0 +1,56 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            mf.movie_id AS \"work_id!\",\n            mf.role,\n            mf.manifestation AS \"manifestation: u32\",\n            mf.part AS \"part: u32\",\n            ds.uuid AS \"data_source_uuid!: DataSourceUuid\",\n            ds.name AS data_source_name,\n            fm.rel_path\n        FROM movie_files mf\n        JOIN movies m\n            ON m.id = mf.movie_id\n        JOIN file_measurements fm\n            ON fm.id = mf.file_id\n        JOIN data_sources ds\n            ON ds.id = fm.data_source_id\n        WHERE m.interpretation_id = ?\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "work_id!",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "role",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "manifestation: u32",
+        "ordinal": 2,
+        "type_info": "Integer"
+      },
+      {
+        "name": "part: u32",
+        "ordinal": 3,
+        "type_info": "Integer"
+      },
+      {
+        "name": "data_source_uuid!: DataSourceUuid",
+        "ordinal": 4,
+        "type_info": "Blob"
+      },
+      {
+        "name": "data_source_name",
+        "ordinal": 5,
+        "type_info": "Text"
+      },
+      {
+        "name": "rel_path",
+        "ordinal": 6,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "180dcb99ace5033e735861f3505ea1e097fea84b94b8778fff9c52a22624aa4b"
+}

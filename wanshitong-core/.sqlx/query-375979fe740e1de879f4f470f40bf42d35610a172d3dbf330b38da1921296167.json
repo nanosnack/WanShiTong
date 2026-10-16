@@ -1,0 +1,26 @@
+{
+  "db_name": "SQLite",
+  "query": "\n            SELECT ds.name, fm.rel_path\n            FROM file_measurements fm\n            JOIN data_sources ds\n                ON ds.id = fm.data_source_id\n            WHERE fm.id = ?\n            ",
+  "describe": {
+    "columns": [
+      {
+        "name": "name",
+        "ordinal": 0,
+        "type_info": "Text"
+      },
+      {
+        "name": "rel_path",
+        "ordinal": 1,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "375979fe740e1de879f4f470f40bf42d35610a172d3dbf330b38da1921296167"
+}

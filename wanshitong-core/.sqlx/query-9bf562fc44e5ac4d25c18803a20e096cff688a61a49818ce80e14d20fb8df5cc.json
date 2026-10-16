@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "INSERT INTO disc_files (disc_id, file_id) VALUES (?, ?)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": []
+  },
+  "hash": "9bf562fc44e5ac4d25c18803a20e096cff688a61a49818ce80e14d20fb8df5cc"
+}

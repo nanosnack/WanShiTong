@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "UPDATE changesets SET state = 'accepted', closed_at = ? WHERE id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": []
+  },
+  "hash": "edced54a25d285e2f6f79fe3a6d4872c65e5d532368528cb0788a0156b2b8f42"
+}

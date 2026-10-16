@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "UPDATE interpretations SET build = ? WHERE id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": []
+  },
+  "hash": "a9321138040d1fd5fedfe5499d246a5acbb1af57e3956b7d8eead9dd72d657ad"
+}

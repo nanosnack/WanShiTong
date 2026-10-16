@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        INSERT INTO changesets (uuid, author, description, created_at, state)\n        VALUES (?, ?, ?, ?, 'open')\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 4
+    },
+    "nullable": []
+  },
+  "hash": "55b3ca10a2fdd3e890753f88fe8c13b8437f639d6bb9c2c3d1d0dbbb2a93ec60"
+}

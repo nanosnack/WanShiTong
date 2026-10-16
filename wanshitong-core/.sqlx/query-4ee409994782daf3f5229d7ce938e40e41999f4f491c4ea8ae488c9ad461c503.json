@@ -1,0 +1,26 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT v.name, COALESCE(jv.root_path, pv.root_path) AS \"root_path!: String\"\n        FROM views v\n        LEFT JOIN jellyfin_views jv\n            ON jv.id = v.id\n        LEFT JOIN plex_views pv\n            ON pv.id = v.id\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "name",
+        "ordinal": 0,
+        "type_info": "Text"
+      },
+      {
+        "name": "root_path!: String",
+        "ordinal": 1,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 0
+    },
+    "nullable": [
+      false,
+      true
+    ]
+  },
+  "hash": "4ee409994782daf3f5229d7ce938e40e41999f4f491c4ea8ae488c9ad461c503"
+}

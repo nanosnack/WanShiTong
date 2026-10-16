@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        UPDATE system_state\n        SET latest_config_snapshot_id = last_insert_rowid()\n        WHERE id = 1\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 0
+    },
+    "nullable": []
+  },
+  "hash": "628a09dc4e4b2c5642e818e19f364d4f5e9a227fd46fd9acde62aa460e25b455"
+}

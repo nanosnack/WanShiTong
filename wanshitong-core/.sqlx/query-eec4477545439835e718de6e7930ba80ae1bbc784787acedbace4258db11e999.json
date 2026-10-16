@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "INSERT INTO interpretation_errors (interpretation_id, file_id, subject, error)\n             VALUES (?, ?, ?, ?)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 4
+    },
+    "nullable": []
+  },
+  "hash": "eec4477545439835e718de6e7930ba80ae1bbc784787acedbace4258db11e999"
+}

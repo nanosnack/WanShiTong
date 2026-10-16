@@ -1,0 +1,179 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 954 648" width="954" height="648" role="img" aria-labelledby="title desc">
+  <title id="title">How Wan Shi Tong labels a media library</title>
+  <desc id="desc">Ingest walks and probes the library's files and records the facts. Interpretation then runs automatically: broad and narrow heuristics, the user's assertions, a TMDB search, and the belief policy produce ranked claims, from which the catalog is built. The new catalog becomes canonical and views are refreshed as symlink trees that Jellyfin or Plex read. The user audits the catalog and corrects mistakes with assertions, which feed back into interpretation.</desc>
+  <style>
+    svg {
+      --ink: #1f2328; --muted: #59636e; --box: #ffffff; --line: #8c959f; --ext: #6e7781;
+      --ingest: #0969da; --ingest-bg: #ddf4ff;
+      --interpret: #8250df; --interpret-bg: #fbefff;
+      --publish: #1a7f37; --publish-bg: #dafbe1;
+      --you: #bc4c00; --you-bg: #fff1e5;
+      --pill-ink: #ffffff;
+    }
+    @media (prefers-color-scheme: dark) {
+      svg {
+        --ink: #e6edf3; --muted: #9198a1; --box: #0d1117; --line: #6e7681; --ext: #9198a1;
+        --ingest: #4493f8; --ingest-bg: #0c2d6b;
+        --interpret: #ab7df8; --interpret-bg: #2e1461;
+        --publish: #3fb950; --publish-bg: #033a16;
+        --you: #f0883e; --you-bg: #3d1e00;
+        --pill-ink: #0d1117;
+      }
+    }
+    text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif; fill: var(--ink); }
+    .t { font-size: 14px; font-weight: 600; }
+    .s { font-size: 12.5px; fill: var(--muted); }
+    .cap { font-size: 12px; font-style: italic; fill: var(--muted); }
+    .pill-t { font-size: 11.5px; font-weight: 700; letter-spacing: 0.08em; fill: var(--pill-ink); }
+    .box { fill: var(--box); stroke-width: 1.25; }
+    .ext { fill: var(--box); stroke: var(--ext); stroke-width: 1.25; stroke-dasharray: 5 4; }
+    .flow { fill: none; stroke: var(--line); stroke-width: 1.5; }
+    .head { fill: var(--line); }
+    .flow-you { fill: none; stroke: var(--you); stroke-width: 1.5; stroke-dasharray: 5 4; }
+    .head-you { fill: var(--you); }
+    .ingest .band { fill: var(--ingest-bg); stroke: var(--ingest); }
+    .ingest .box { stroke: var(--ingest); }
+    .ingest .pill { fill: var(--ingest); }
+    .interpret .band { fill: var(--interpret-bg); stroke: var(--interpret); }
+    .interpret .box { stroke: var(--interpret); }
+    .interpret .pill { fill: var(--interpret); }
+    .publish .band { fill: var(--publish-bg); stroke: var(--publish); }
+    .publish .box { stroke: var(--publish); }
+    .publish .pill { fill: var(--publish); }
+    .band { stroke-width: 1; fill-opacity: 0.55; stroke-opacity: 0.5; }
+    .you { fill: var(--you-bg); stroke: var(--you); stroke-width: 1.25; }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path class="head" d="M0,0 L10,5 L0,10 z"/>
+    </marker>
+    <marker id="arrow-you" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path class="head-you" d="M0,0 L10,5 L0,10 z"/>
+    </marker>
+  </defs>
+
+  <!-- 1 · Ingest -->
+  <g class="ingest">
+    <rect class="band" x="172" y="24" width="610" height="128" rx="14"/>
+    <rect class="pill" x="188" y="13" width="82" height="22" rx="11"/>
+    <text class="pill-t" x="229" y="28" text-anchor="middle">1 · INGEST</text>
+
+    <rect class="box" x="192" y="48" width="170" height="80" rx="8"/>
+    <text class="t" x="206" y="74">Walk the files</text>
+    <text class="s" x="206" y="94">every file under each</text>
+    <text class="s" x="206" y="111">data source</text>
+
+    <rect class="box" x="392" y="48" width="170" height="80" rx="8"/>
+    <text class="t" x="406" y="74">Probe them</text>
+    <text class="s" x="406" y="94">ffprobe, MIME, discs;</text>
+    <text class="s" x="406" y="111">skips unchanged files</text>
+
+    <rect class="box" x="592" y="48" width="170" height="80" rx="8"/>
+    <text class="t" x="606" y="74">Record the facts</text>
+    <text class="s" x="606" y="94">what was seen, and</text>
+    <text class="s" x="606" y="111">when, as an ingest</text>
+  </g>
+
+  <!-- 2 · Interpret -->
+  <g class="interpret">
+    <rect class="band" x="172" y="200" width="610" height="248" rx="14"/>
+    <rect class="pill" x="188" y="189" width="106" height="22" rx="11"/>
+    <text class="pill-t" x="241" y="204" text-anchor="middle">2 · INTERPRET</text>
+    <text class="cap" x="762" y="216" text-anchor="end">runs after every ingest · every guess is a ranked claim</text>
+
+    <rect class="box" x="192" y="224" width="170" height="80" rx="8"/>
+    <text class="t" x="206" y="250">Broad heuristics</text>
+    <text class="s" x="206" y="270">discs, movie folders,</text>
+    <text class="s" x="206" y="287">extras, junk files</text>
+
+    <rect class="box" x="392" y="224" width="170" height="80" rx="8"/>
+    <text class="t" x="406" y="250">Narrow heuristics</text>
+    <text class="s" x="406" y="270">titles, years, seasons,</text>
+    <text class="s" x="406" y="287">episodes, parts</text>
+
+    <rect class="box" x="592" y="224" width="170" height="80" rx="8"/>
+    <text class="t" x="606" y="250">Your assertions</text>
+    <text class="s" x="606" y="270">outrank every</text>
+    <text class="s" x="606" y="287">heuristic claim</text>
+
+    <rect class="box" x="192" y="344" width="170" height="80" rx="8"/>
+    <text class="t" x="206" y="370">Search TMDB</text>
+    <text class="s" x="206" y="390">with the best-ranked</text>
+    <text class="s" x="206" y="407">title and year</text>
+
+    <rect class="box" x="392" y="344" width="170" height="80" rx="8"/>
+    <text class="t" x="406" y="370">Belief policy</text>
+    <text class="s" x="406" y="390">settle conflicting</text>
+    <text class="s" x="406" y="407">claims, log why</text>
+
+    <rect class="box" x="592" y="344" width="170" height="80" rx="8"/>
+    <text class="t" x="606" y="370">Build the catalog</text>
+    <text class="s" x="606" y="390">movies and TV series,</text>
+    <text class="s" x="606" y="407">with TMDB details</text>
+  </g>
+
+  <!-- 3 · Publish -->
+  <g class="publish">
+    <rect class="band" x="172" y="496" width="410" height="128" rx="14"/>
+    <rect class="pill" x="188" y="485" width="96" height="22" rx="11"/>
+    <text class="pill-t" x="236" y="500" text-anchor="middle">3 · PUBLISH</text>
+
+    <rect class="box" x="192" y="520" width="170" height="80" rx="8"/>
+    <text class="t" x="206" y="546">Make it canonical</text>
+    <text class="s" x="206" y="566">the new catalog</text>
+    <text class="s" x="206" y="583">replaces the old one</text>
+
+    <rect class="box" x="392" y="520" width="170" height="80" rx="8"/>
+    <text class="t" x="406" y="546">Refresh views</text>
+    <text class="s" x="406" y="566">symlink trees in a</text>
+    <text class="s" x="406" y="583">media-server layout</text>
+  </g>
+
+  <!-- Outside the system -->
+  <rect class="ext" x="16" y="48" width="130" height="80" rx="8"/>
+  <text class="t" x="30" y="74">Your library</text>
+  <text class="s" x="30" y="94">any layout,</text>
+  <text class="s" x="30" y="111">never modified</text>
+
+  <rect class="ext" x="16" y="344" width="130" height="80" rx="8"/>
+  <text class="t" x="30" y="370">TMDB</text>
+  <text class="s" x="30" y="390">the only outside</text>
+  <text class="s" x="30" y="407">service needed</text>
+
+  <rect class="ext" x="592" y="520" width="170" height="80" rx="8"/>
+  <text class="t" x="606" y="546">Jellyfin or Plex</text>
+  <text class="s" x="606" y="566">reads the symlinks,</text>
+  <text class="s" x="606" y="583">not your files</text>
+
+  <rect class="you" x="808" y="224" width="130" height="200" rx="8"/>
+  <text class="t" x="822" y="250">You, or</text>
+  <text class="t" x="822" y="268">your LLM</text>
+  <text class="s" x="822" y="292">audit why each</text>
+  <text class="s" x="822" y="309">file was labeled</text>
+  <text class="s" x="822" y="326">in the web UI,</text>
+  <text class="s" x="822" y="343">API, or wst CLI,</text>
+  <text class="s" x="822" y="360">and correct any</text>
+  <text class="s" x="822" y="377">mistake with an</text>
+  <text class="s" x="822" y="394">assertion</text>
+
+  <!-- Flow -->
+  <path class="flow" d="M146,88 H190" marker-end="url(#arrow)"/>
+  <path class="flow" d="M362,88 H390" marker-end="url(#arrow)"/>
+  <path class="flow" d="M562,88 H590" marker-end="url(#arrow)"/>
+  <path class="flow" d="M677,128 V176 H330 V222" marker-end="url(#arrow)"/>
+
+  <path class="flow" d="M362,264 H390" marker-end="url(#arrow)"/>
+  <path class="flow" d="M562,264 H590" marker-end="url(#arrow)"/>
+  <path class="flow" d="M677,304 V324 H330 V342" marker-end="url(#arrow)"/>
+  <path class="flow" d="M146,384 H190" marker-end="url(#arrow)"/>
+  <path class="flow" d="M362,384 H390" marker-end="url(#arrow)"/>
+  <path class="flow" d="M562,384 H590" marker-end="url(#arrow)"/>
+  <path class="flow" d="M677,424 V472 H330 V518" marker-end="url(#arrow)"/>
+
+  <path class="flow" d="M362,560 H390" marker-end="url(#arrow)"/>
+  <path class="flow" d="M562,560 H590" marker-end="url(#arrow)"/>
+
+  <!-- Feedback loop -->
+  <path class="flow-you" d="M762,384 H806" marker-end="url(#arrow-you)"/>
+  <path class="flow-you" d="M808,264 H764" marker-end="url(#arrow-you)"/>
+</svg>

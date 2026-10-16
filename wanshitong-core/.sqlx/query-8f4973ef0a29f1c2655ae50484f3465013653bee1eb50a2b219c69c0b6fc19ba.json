@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "\n            INSERT INTO interpretation_ingests\n                (interpretation_id, data_source_id, ingest_id)\n            VALUES (?, ?, ?)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 3
+    },
+    "nullable": []
+  },
+  "hash": "8f4973ef0a29f1c2655ae50484f3465013653bee1eb50a2b219c69c0b6fc19ba"
+}

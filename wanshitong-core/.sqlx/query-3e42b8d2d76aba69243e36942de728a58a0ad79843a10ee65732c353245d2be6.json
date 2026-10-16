@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            EXISTS (SELECT 1 FROM movies WHERE interpretation_id = ?1)\n            OR EXISTS (SELECT 1 FROM tv_series WHERE interpretation_id = ?1)\n            OR EXISTS (SELECT 1 FROM audit_logs WHERE interpretation_id = ?1)\n            AS \"exists!: bool\"\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "exists!: bool",
+        "ordinal": 0,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "3e42b8d2d76aba69243e36942de728a58a0ad79843a10ee65732c353245d2be6"
+}

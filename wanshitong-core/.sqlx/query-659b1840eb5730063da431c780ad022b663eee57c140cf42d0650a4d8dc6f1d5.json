@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "\n            INSERT INTO movie_files (movie_id, file_id, role, expression_id, manifestation, part)\n            VALUES (?, ?, ?, ?, ?, ?)\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 6
+    },
+    "nullable": []
+  },
+  "hash": "659b1840eb5730063da431c780ad022b663eee57c140cf42d0650a4d8dc6f1d5"
+}

@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "UPDATE data_sources SET deleted_at = COALESCE(deleted_at, ?) WHERE uuid = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": []
+  },
+  "hash": "ba37acf8c9bb525b98dcf8665837d8e50f010c7bb9e34bc80ffba835c89e1ca7"
+}

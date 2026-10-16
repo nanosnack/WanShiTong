@@ -1,0 +1,38 @@
+{
+  "db_name": "SQLite",
+  "query": "\n            SELECT\n                ds.uuid AS \"data_source_uuid!: DataSourceUuid\",\n                ds.name AS data_source_name,\n                i.uuid AS \"ingest_uuid!: IngestUuid\",\n                i.started_at AS ingest_started_at\n            FROM interpretation_ingests ii\n            JOIN data_sources ds\n                ON ds.id = ii.data_source_id\n            JOIN ingests i\n                ON i.id = ii.ingest_id\n            WHERE ii.interpretation_id = ?\n            ORDER BY ds.name\n            ",
+  "describe": {
+    "columns": [
+      {
+        "name": "data_source_uuid!: DataSourceUuid",
+        "ordinal": 0,
+        "type_info": "Blob"
+      },
+      {
+        "name": "data_source_name",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "ingest_uuid!: IngestUuid",
+        "ordinal": 2,
+        "type_info": "Blob"
+      },
+      {
+        "name": "ingest_started_at",
+        "ordinal": 3,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "c5dcac3f442221036010f6e576a6847c411cf3a4748685acd374d965fb3b2131"
+}

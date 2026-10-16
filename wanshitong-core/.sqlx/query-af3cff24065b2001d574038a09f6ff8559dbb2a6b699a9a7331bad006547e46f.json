@@ -1,0 +1,56 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            id AS \"id!: MovieRowId\",\n            uuid AS \"uuid: MovieUuid\",\n            title,\n            sort_title AS \"sort_title!\",\n            release_year,\n            tmdb_id,\n            tmdb_poster_path\n        FROM movies\n        WHERE\n            interpretation_id = ?1\n            AND (?2 IS NULL OR lower(title) LIKE '%' || lower(?2) || '%')\n            AND (\n                NOT ?6\n                OR EXISTS (\n                    SELECT 1\n                    FROM movie_files mf\n                    WHERE mf.movie_id = movies.id AND mf.role = 'extra'\n                )\n            )\n            AND (\n                ?3 IS NULL\n                OR (\n                    sort_title > ?3\n                    OR (sort_title = ?3 AND id >= ?4)\n                )\n            )\n        ORDER BY sort_title, id\n        LIMIT ?5;\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: MovieRowId",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "uuid: MovieUuid",
+        "ordinal": 1,
+        "type_info": "Blob"
+      },
+      {
+        "name": "title",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "sort_title!",
+        "ordinal": 3,
+        "type_info": "Text"
+      },
+      {
+        "name": "release_year",
+        "ordinal": 4,
+        "type_info": "Integer"
+      },
+      {
+        "name": "tmdb_id",
+        "ordinal": 5,
+        "type_info": "Integer"
+      },
+      {
+        "name": "tmdb_poster_path",
+        "ordinal": 6,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 6
+    },
+    "nullable": [
+      true,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true
+    ]
+  },
+  "hash": "af3cff24065b2001d574038a09f6ff8559dbb2a6b699a9a7331bad006547e46f"
+}

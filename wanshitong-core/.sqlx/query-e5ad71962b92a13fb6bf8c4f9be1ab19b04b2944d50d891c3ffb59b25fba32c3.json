@@ -1,0 +1,26 @@
+{
+  "db_name": "SQLite",
+  "query": "\n            SELECT a.id AS \"id!\", a.claim\n            FROM assertions a\n            JOIN assertion_groups g\n                ON g.id = a.group_id\n            JOIN changesets c\n                ON c.id = g.changeset_id\n            WHERE\n                a.data_source_id = ?\n                AND a.rel_path = ?\n                AND a.retracted_at IS NULL\n                AND c.state = 'accepted'\n            ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "claim",
+        "ordinal": 1,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": [
+      true,
+      false
+    ]
+  },
+  "hash": "e5ad71962b92a13fb6bf8c4f9be1ab19b04b2944d50d891c3ffb59b25fba32c3"
+}

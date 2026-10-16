@@ -1,0 +1,38 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            xf.file_id AS \"file_id!: FileMeasurementRowId\",\n            s.uuid AS \"series_uuid!: TvSeriesUuid\",\n            s.name AS series_name,\n            xf.disc AS \"disc!: bool\"\n        FROM tv_series_extra_files xf\n        JOIN tv_series s\n            ON s.id = xf.series_id\n        JOIN complete_file_measurements m\n            ON m.id = xf.file_id\n        WHERE\n            s.interpretation_id = ?1\n            AND m.data_source_uuid = ?2\n            AND m.rel_path >= ?3\n            AND m.rel_path < ?3 || char(1114111)\n        ORDER BY s.sort_name, s.id\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "file_id!: FileMeasurementRowId",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "series_uuid!: TvSeriesUuid",
+        "ordinal": 1,
+        "type_info": "Blob"
+      },
+      {
+        "name": "series_name",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "disc!: bool",
+        "ordinal": 3,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 3
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "8922efe8ccba4b76a7ed66fe6e3035afaad025bb9571416c377085668288b249"
+}

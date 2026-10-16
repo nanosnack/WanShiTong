@@ -1,0 +1,26 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            kind AS \"kind!: String\",\n            interpretation_uuid AS \"interpretation_uuid!: InterpretationUuid\"\n        FROM (\n            SELECT 'movie' AS kind, i.uuid AS interpretation_uuid\n            FROM movies m\n            JOIN interpretations i\n                ON i.id = m.interpretation_id\n            WHERE m.uuid = ?1\n            UNION ALL\n            SELECT 'tv_series' AS kind, i.uuid AS interpretation_uuid\n            FROM tv_series s\n            JOIN interpretations i\n                ON i.id = s.interpretation_id\n            WHERE s.uuid = ?1\n        )\n        LIMIT 1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "kind!: String",
+        "ordinal": 0,
+        "type_info": "Null"
+      },
+      {
+        "name": "interpretation_uuid!: InterpretationUuid",
+        "ordinal": 1,
+        "type_info": "Blob"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      null,
+      false
+    ]
+  },
+  "hash": "c7b8f354523fb0f184520898e4eb01cd16c7aa1386199638ab196a750f0caa6a"
+}

@@ -1,0 +1,15 @@
+# Only what the build reads, as nix/package.nix lists it. Everything else,
+# notably the repository's own metadata and the build directory, stays out of
+# the build context.
+*
+!Cargo.toml
+!Cargo.lock
+!rust-toolchain.toml
+!ffprobe-types
+!wanshitong-api
+!wanshitong-app
+!wanshitong-core
+!wanshitong-web
+!wst
+**/target
+**/database.sqlite*

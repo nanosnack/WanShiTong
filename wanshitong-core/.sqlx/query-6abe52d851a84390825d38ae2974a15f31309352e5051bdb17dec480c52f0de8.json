@@ -1,0 +1,44 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            m.id AS \"id!: FileMeasurementRowId\",\n            m.rel_path AS \"rel_path!\",\n            m.size AS \"size!\",\n            m.media_measurements AS \"media_measurements?\",\n            EXISTS (\n                SELECT 1\n                FROM unidentified_videos uv\n                WHERE uv.interpretation_id = ?1 AND uv.file_id = m.id\n            ) AS \"unidentified_video!: bool\"\n        FROM complete_file_measurements m\n        JOIN interpretation_ingests ii\n            ON ii.ingest_id = m.ingest_id\n        WHERE\n            ii.interpretation_id = ?1\n            AND m.data_source_uuid = ?2\n            AND m.rel_path >= ?3\n            AND m.rel_path < ?3 || char(1114111)\n        ORDER BY m.rel_path\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: FileMeasurementRowId",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "rel_path!",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "size!",
+        "ordinal": 2,
+        "type_info": "Integer"
+      },
+      {
+        "name": "media_measurements?",
+        "ordinal": 3,
+        "type_info": "Text"
+      },
+      {
+        "name": "unidentified_video!: bool",
+        "ordinal": 4,
+        "type_info": "Null"
+      }
+    ],
+    "parameters": {
+      "Right": 3
+    },
+    "nullable": [
+      true,
+      false,
+      false,
+      false,
+      null
+    ]
+  },
+  "hash": "6abe52d851a84390825d38ae2974a15f31309352e5051bdb17dec480c52f0de8"
+}

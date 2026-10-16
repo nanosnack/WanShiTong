@@ -1,0 +1,98 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            i.id AS \"id!: InterpretationRowId\",\n            i.uuid AS \"uuid!: InterpretationUuid\",\n            i.name,\n            i.started_at,\n            i.stopped_at,\n            i.error,\n            COALESCE(i.id = ss.canonical_interpretation_id, 0) AS \"is_canonical!: bool\",\n            c.uuid AS \"changeset_uuid?: ChangesetUuid\",\n            c.author AS \"changeset_author?\",\n            c.description AS \"changeset_description?\",\n            c.state AS \"changeset_state?\",\n            (SELECT COUNT(*) FROM movies m WHERE m.interpretation_id = i.id) AS \"movie_count!: i64\",\n            (\n                SELECT COUNT(*)\n                FROM tv_episodes e\n                JOIN tv_seasons s ON s.id = e.season_id\n                JOIN tv_series ts ON ts.id = s.series_id\n                WHERE ts.interpretation_id = i.id\n            ) AS \"episode_count!: i64\",\n            (\n                SELECT COUNT(*) FROM interpretation_errors e WHERE e.interpretation_id = i.id\n            ) AS \"error_count!: i64\"\n        FROM interpretations i\n        JOIN system_state ss\n        LEFT JOIN changesets c\n            ON c.id = i.changeset_id\n        WHERE\n            (?1 IS NULL OR i.uuid = ?1)\n            AND (NOT ?2 OR i.id IS ss.canonical_interpretation_id)\n            AND (?3 IS NULL OR c.uuid = ?3)\n        ORDER BY i.started_at DESC, i.id DESC\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: InterpretationRowId",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "uuid!: InterpretationUuid",
+        "ordinal": 1,
+        "type_info": "Blob"
+      },
+      {
+        "name": "name",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "started_at",
+        "ordinal": 3,
+        "type_info": "Integer"
+      },
+      {
+        "name": "stopped_at",
+        "ordinal": 4,
+        "type_info": "Integer"
+      },
+      {
+        "name": "error",
+        "ordinal": 5,
+        "type_info": "Text"
+      },
+      {
+        "name": "is_canonical!: bool",
+        "ordinal": 6,
+        "type_info": "Integer"
+      },
+      {
+        "name": "changeset_uuid?: ChangesetUuid",
+        "ordinal": 7,
+        "type_info": "Blob"
+      },
+      {
+        "name": "changeset_author?",
+        "ordinal": 8,
+        "type_info": "Text"
+      },
+      {
+        "name": "changeset_description?",
+        "ordinal": 9,
+        "type_info": "Text"
+      },
+      {
+        "name": "changeset_state?",
+        "ordinal": 10,
+        "type_info": "Text"
+      },
+      {
+        "name": "movie_count!: i64",
+        "ordinal": 11,
+        "type_info": "Integer"
+      },
+      {
+        "name": "episode_count!: i64",
+        "ordinal": 12,
+        "type_info": "Integer"
+      },
+      {
+        "name": "error_count!: i64",
+        "ordinal": 13,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 3
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "4469f655a70244ca43c2833a32162be9a73b49827ce4ba58cea5ccb99187bc32"
+}

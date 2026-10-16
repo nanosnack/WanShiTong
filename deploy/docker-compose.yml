@@ -1,0 +1,49 @@
+# Wan Shi Tong beside Jellyfin. Both see the library and the views at the same
+# paths, which views need: a view is a directory of symlinks to the media by
+# absolute path, so the media server must find the media where WST did.
+#
+# Before the first `docker compose up -d`, create the directories the
+# containers write to, owned by the user they run as:
+#
+#   mkdir -p wanshitong/config wanshitong/data wanshitong/cache jellyfin
+#   mkdir -p /srv/views
+#
+# Then open http://localhost:6765, add /srv/media as a data source and write a
+# view to /srv/views, and point Jellyfin's libraries at /srv/views.
+
+services:
+  wanshitong:
+    image: ghcr.io/nanosnack/wanshitong:latest
+    container_name: wanshitong
+    # Writes views and its own files as this user, so make it the owner of
+    # the directories below. Leave it out to run as root.
+    user: "1000:1000"
+    ports:
+      - "6765:6765"
+    volumes:
+      - ./wanshitong/config:/config
+      - ./wanshitong/data:/data
+      - ./wanshitong/cache:/cache
+      # The library, read-only: WST never writes to it.
+      - /srv/media:/srv/media:ro
+      # Where views are written.
+      - /srv/views:/srv/views
+    environment:
+      # Any config.toml key, as WST__<KEY>. The TMDB token WST comes with is
+      # only for noncommercial use; commercial users set their own.
+      # WST__TMDB_TOKEN: ""
+      # What the log shows; `debug` says what each request did.
+      RUST_LOG: info
+    restart: unless-stopped
+
+  jellyfin:
+    image: jellyfin/jellyfin:latest
+    container_name: jellyfin
+    user: "1000:1000"
+    ports:
+      - "8096:8096"
+    volumes:
+      - ./jellyfin:/config
+      - /srv/media:/srv/media:ro
+      - /srv/views:/srv/views:ro
+    restart: unless-stopped

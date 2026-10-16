@@ -1,0 +1,68 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            m.uuid AS \"uuid!: MarkUuid\",\n            m.label,\n            m.note,\n            m.created_at,\n            ds.uuid AS \"data_source_uuid!: DataSourceUuid\",\n            ds.name AS data_source_name,\n            mf.rel_path,\n            EXISTS (\n                SELECT 1\n                FROM assertions a\n                JOIN assertion_groups g\n                    ON g.id = a.group_id\n                JOIN changesets c\n                    ON c.id = g.changeset_id\n                WHERE\n                    a.data_source_id = mf.data_source_id\n                    AND a.rel_path = mf.rel_path\n                    AND c.state = 'accepted'\n                    AND a.created_at >= m.created_at\n            ) AS \"done!: bool\",\n            EXISTS (\n                SELECT 1\n                FROM assertions a\n                JOIN assertion_groups g\n                    ON g.id = a.group_id\n                JOIN changesets c\n                    ON c.id = g.changeset_id\n                WHERE\n                    a.data_source_id = mf.data_source_id\n                    AND a.rel_path = mf.rel_path\n                    AND c.state = 'open'\n                    AND a.retracted_at IS NULL\n            ) AS \"pending!: bool\"\n        FROM marks m\n        JOIN mark_files mf\n            ON mf.mark_id = m.id\n        JOIN data_sources ds\n            ON ds.id = mf.data_source_id\n        ORDER BY m.created_at DESC, m.id DESC, ds.name, mf.rel_path\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "uuid!: MarkUuid",
+        "ordinal": 0,
+        "type_info": "Blob"
+      },
+      {
+        "name": "label",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "note",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "created_at",
+        "ordinal": 3,
+        "type_info": "Integer"
+      },
+      {
+        "name": "data_source_uuid!: DataSourceUuid",
+        "ordinal": 4,
+        "type_info": "Blob"
+      },
+      {
+        "name": "data_source_name",
+        "ordinal": 5,
+        "type_info": "Text"
+      },
+      {
+        "name": "rel_path",
+        "ordinal": 6,
+        "type_info": "Text"
+      },
+      {
+        "name": "done!: bool",
+        "ordinal": 7,
+        "type_info": "Integer"
+      },
+      {
+        "name": "pending!: bool",
+        "ordinal": 8,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 0
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "9731897b5490a818d629517e3bcad4bd989f8dda56dfc683a3bd5456f8a21bf1"
+}

@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "UPDATE system_state SET canonical_interpretation_id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": []
+  },
+  "hash": "cec20afd45396311b3d4bd3bdc6725eb039b876c49e663ba2eef261ca95eeb4a"
+}

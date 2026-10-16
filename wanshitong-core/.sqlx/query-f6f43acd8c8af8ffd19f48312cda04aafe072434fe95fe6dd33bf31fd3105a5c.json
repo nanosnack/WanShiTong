@@ -1,0 +1,26 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            onboarding_enabled AS \"enabled: bool\",\n            onboarding_steps_done AS \"steps_done: u32\"\n        FROM system_state\n        WHERE id = 1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "enabled: bool",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "steps_done: u32",
+        "ordinal": 1,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 0
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "f6f43acd8c8af8ffd19f48312cda04aafe072434fe95fe6dd33bf31fd3105a5c"
+}

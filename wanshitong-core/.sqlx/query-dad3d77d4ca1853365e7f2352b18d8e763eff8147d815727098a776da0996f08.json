@@ -1,0 +1,50 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            id AS \"id!: ChangesetRowId\",\n            author,\n            description,\n            state,\n            created_at,\n            closed_at\n        FROM changesets\n        WHERE uuid = ?\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: ChangesetRowId",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "author",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "description",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "state",
+        "ordinal": 3,
+        "type_info": "Text"
+      },
+      {
+        "name": "created_at",
+        "ordinal": 4,
+        "type_info": "Integer"
+      },
+      {
+        "name": "closed_at",
+        "ordinal": 5,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      true,
+      false,
+      false,
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "dad3d77d4ca1853365e7f2352b18d8e763eff8147d815727098a776da0996f08"
+}

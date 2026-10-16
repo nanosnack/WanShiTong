@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        INSERT INTO view_materializations (\n            view_id,\n            interpretation_id,\n            started_at,\n            stopped_at,\n            success,\n            links_created,\n            links_updated,\n            links_removed,\n            error\n        )\n        SELECT id, ?, ?, ?, ?, ?, ?, ?, ?\n        FROM views\n        WHERE uuid = ?\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 9
+    },
+    "nullable": []
+  },
+  "hash": "619214ff46841a31740f8d8a1c03523d55d07296eb58374ba72710bb1c48410a"
+}

@@ -1,0 +1,32 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            xf.series_id,\n            fm.rel_path,\n            fs.root_path\n        FROM tv_series s\n        JOIN tv_series_extra_files xf\n            ON xf.series_id = s.id\n        JOIN file_measurements fm\n            ON fm.id = xf.file_id\n        JOIN fs_data_sources fs\n            ON fs.id = fm.data_source_id\n        -- A series' discs aren't its episodes or its extras.\n        WHERE s.interpretation_id = ?1 AND xf.disc = 0\n        ORDER BY xf.series_id, fm.rel_path\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "series_id",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "rel_path",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "root_path",
+        "ordinal": 2,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "9d485c84f8b3785c665093c45e950a288b04c1f72378b701a651446c631209ea"
+}

@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "INSERT INTO ingest_file_failures (ingest_id, rel_path, stage, error)\n                 VALUES (?, ?, ?, ?)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 4
+    },
+    "nullable": []
+  },
+  "hash": "c6dc871c72b8d2fd9bc95eab2800a30a97df51804d10122e4f7729cee2ca093b"
+}

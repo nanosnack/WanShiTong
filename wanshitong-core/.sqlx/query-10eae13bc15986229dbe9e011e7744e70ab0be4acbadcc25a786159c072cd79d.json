@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "\n                UPDATE file_measurements\n                SET media_measurement_id = ?\n                WHERE id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": []
+  },
+  "hash": "10eae13bc15986229dbe9e011e7744e70ab0be4acbadcc25a786159c072cd79d"
+}

@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "\n            DELETE FROM interpretations\n            WHERE\n                id = ?\n                AND id IS NOT (SELECT canonical_interpretation_id FROM system_state)\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": []
+  },
+  "hash": "0aa0e219d45cf1650b35d8625c17fd8fd9c7eded919f850679ce51dac44c6204"
+}

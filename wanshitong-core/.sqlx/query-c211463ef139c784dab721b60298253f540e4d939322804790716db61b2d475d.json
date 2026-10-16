@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "\n            INSERT INTO tv_series_extra_files (series_id, file_id)\n            VALUES (?, ?)\n            ON CONFLICT DO NOTHING\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": []
+  },
+  "hash": "c211463ef139c784dab721b60298253f540e4d939322804790716db61b2d475d"
+}

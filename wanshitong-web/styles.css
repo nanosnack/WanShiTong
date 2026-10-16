@@ -1,0 +1,385 @@
+/* Neutral, the built-in Topcoat theme.
+
+   The theme is a small set of design tokens. Components refer to tokens only,
+   never to raw colors, so a project restyles itself by editing the values in
+   `:root` and `.dark` below.
+
+     --background              the page background
+     --foreground              text and iconography on the background
+     --card                    cards and panel backgrounds
+     --card-foreground         text and iconography on cards and panels
+     --popover                 floating menu and popover backgrounds
+     --popover-foreground      text and iconography on floating surfaces
+     --muted-foreground        secondary text: captions, descriptions, placeholders
+     --primary                 the emphasis color: primary actions, selection, highlights
+     --primary-foreground      text on a primary-filled surface
+     --destructive             destructive actions and error states
+     --destructive-foreground  text on a destructive-filled surface
+     --success                 successful outcomes (added for Wan Shi Tong)
+     --success-foreground      text on a success-filled surface
+     --warning                 outcomes still pending (added for Wan Shi Tong)
+     --warning-foreground      text on a warning-filled surface
+     --border                  hairline borders and dividers
+     --ring                    the focus ring
+     --sidebar                 the sidebar background
+     --sidebar-foreground      sidebar text and icons
+     --sidebar-primary         primary actions inside the sidebar
+     --sidebar-primary-foreground  text on sidebar primary actions
+     --sidebar-accent          sidebar hover and selected backgrounds
+     --sidebar-accent-foreground   text on sidebar accents
+     --sidebar-border          sidebar borders and dividers
+     --sidebar-ring            sidebar focus rings
+     --shadow-xs               a subtle shadow for raised controls
+     --shadow-sm               a shadow for raised surfaces: cards, menus
+
+   Components derive hover and press states from their fill or foreground
+   color at reduced opacity. The sidebar has its own accent token for
+   interactive rows, so it can be themed independently.
+
+   The theme was written for Geist; this app uses the system font stack
+   instead, so no web font is fetched. */
+
+/* Only the sources below: the default automatic detection would also scan
+   static/, whose minified scripts contain class-like strings. */
+@import "tailwindcss" source(none);
+
+/* Scan the project's Rust sources for the Tailwind classes they use. This
+   file is installed at the project root, so `./src` is the crate's source. */
+@source "./src/**/*.rs";
+
+/* Dark mode is opted into by putting the `dark` class on an ancestor,
+   typically <html>. */
+@custom-variant dark (&:is(.dark *));
+
+/* The compact header: the navbar's links are in its menu, and the bar names
+   the current page. On narrow screens, and wherever the links don't all fit
+   in a row, which ts/nav.ts marks on <body>. */
+@custom-variant compact {
+  @media (width < 40rem) {
+    @slot;
+  }
+  &:where(body[data-nav-collapsed] *) {
+    @slot;
+  }
+}
+
+/* Expose the tokens as Tailwind utilities (`bg-background`, `text-primary`,
+   `border-border`, ...). The indirection through plain variables on `:root`
+   and `.dark` is what lets the values swap when the color scheme changes. */
+@theme inline {
+  --font-sans: ui-sans-serif, system-ui, sans-serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --shadow-xs: var(--shadow-xs);
+  --shadow-sm: var(--shadow-sm);
+}
+
+:root {
+  --background: oklch(0.9875 0.003 260);
+  --foreground: oklch(0.24 0.012 260);
+  --card: oklch(0.995 0.003 260);
+  --card-foreground: oklch(0.24 0.012 260);
+  --popover: oklch(0.995 0.003 260);
+  --popover-foreground: oklch(0.24 0.012 260);
+  --muted-foreground: oklch(0.51 0.014 260);
+  --primary: oklch(0.21 0.02 260);
+  --primary-foreground: oklch(0.985 0.003 260);
+  --destructive: oklch(0.55 0.2 27);
+  --destructive-foreground: oklch(0.99 0.012 27);
+  --success: oklch(0.52 0.14 150);
+  --success-foreground: oklch(0.99 0.012 150);
+  --warning: oklch(0.85 0.16 90);
+  --warning-foreground: oklch(0.25 0.05 90);
+  --border: oklch(0.9 0.008 260);
+  --ring: oklch(0.32 0.02 260);
+  --sidebar: oklch(0.995 0.003 260);
+  --sidebar-foreground: oklch(0.24 0.012 260);
+  --sidebar-primary: oklch(0.21 0.02 260);
+  --sidebar-primary-foreground: oklch(0.985 0.003 260);
+  --sidebar-accent: color-mix(in oklab, var(--sidebar-foreground) 10%, var(--sidebar));
+  --sidebar-accent-foreground: oklch(0.24 0.012 260);
+  --sidebar-border: oklch(0.9 0.008 260);
+  --sidebar-ring: oklch(0.32 0.02 260);
+  --shadow-xs: 0 1px 2px oklch(0.24 0.02 260 / 12%);
+  --shadow-sm:
+    0 1px 2px oklch(0.24 0.02 260 / 10%),
+    0 2px 8px -2px oklch(0.24 0.02 260 / 9%);
+}
+
+.dark {
+  --background: oklch(0.17 0.012 260);
+  --foreground: oklch(0.93 0.006 260);
+  --card: oklch(0.22 0.012 260);
+  --card-foreground: oklch(0.93 0.006 260);
+  --popover: oklch(0.22 0.012 260);
+  --popover-foreground: oklch(0.93 0.006 260);
+  --muted-foreground: oklch(0.68 0.012 260);
+  --primary: oklch(0.92 0.008 260);
+  --primary-foreground: oklch(0.21 0.015 260);
+  --destructive: oklch(0.66 0.18 25);
+  --destructive-foreground: oklch(0.14 0.02 25);
+  --success: oklch(0.7 0.15 150);
+  --success-foreground: oklch(0.14 0.02 150);
+  --warning: oklch(0.82 0.15 90);
+  --warning-foreground: oklch(0.18 0.04 90);
+  --border: oklch(0.3 0.012 260);
+  --ring: oklch(0.6 0.02 260);
+  --sidebar: oklch(0.22 0.012 260);
+  --sidebar-foreground: oklch(0.93 0.006 260);
+  --sidebar-primary: oklch(0.92 0.008 260);
+  --sidebar-primary-foreground: oklch(0.21 0.015 260);
+  --sidebar-accent: color-mix(in oklab, var(--sidebar-foreground) 10%, var(--sidebar));
+  --sidebar-accent-foreground: oklch(0.93 0.006 260);
+  --sidebar-border: oklch(0.3 0.012 260);
+  --sidebar-ring: oklch(0.6 0.02 260);
+  --shadow-xs: 0 1px 2px oklch(0 0 0 / 35%);
+  --shadow-sm:
+    0 1px 2px oklch(0 0 0 / 35%),
+    0 2px 8px -2px oklch(0 0 0 / 30%);
+}
+
+@layer base {
+  body {
+    @apply bg-background font-sans text-foreground;
+  }
+}
+
+/* Wan Shi Tong's own additions to the theme. */
+
+/* A table whose rows become labeled cards on narrow screens. A cell with a
+   `data-label` shows the label before its value there; a cell without one
+   (the row's name, or its actions) spans the card.
+
+   A link marked `data-row-link` covers its whole card there, with a chevron
+   showing the card can be tapped; other links, forms and buttons in the card
+   stay above it.
+   Touch screens have no hover, so the card itself has to look tappable. */
+@utility stacked-table {
+  @variant max-sm {
+    display: block;
+
+    & thead {
+      display: none;
+    }
+
+    & tbody {
+      display: grid;
+      gap: --spacing(3);
+    }
+
+    & tr {
+      display: block;
+      padding: --spacing(3);
+      border-radius: var(--radius-lg);
+      /* The table component removes the last row's border. */
+      border: 1px solid var(--color-border) !important;
+    }
+
+    & tr:has(a[data-row-link]) {
+      position: relative;
+      padding-right: --spacing(10);
+    }
+
+    & a[data-row-link]::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+    }
+
+    /* Lucide's "chevron-right". */
+    & tr:has(a[data-row-link])::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: --spacing(3);
+      translate: 0 -50%;
+      width: --spacing(5);
+      height: --spacing(5);
+      background-color: var(--color-muted-foreground);
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E")
+        no-repeat center / contain;
+    }
+
+    & tr:has(a[data-row-link]) :is(a:not([data-row-link]), form, button) {
+      position: relative;
+      z-index: 1;
+    }
+
+    & td {
+      display: flex;
+      gap: --spacing(3);
+      padding: --spacing(1) 0;
+      text-align: left;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    & td[data-label]::before {
+      content: attr(data-label);
+      flex-shrink: 0;
+      width: --spacing(24);
+      font-family: var(--font-sans);
+      font-size: var(--text-sm);
+      color: var(--color-muted-foreground);
+    }
+  }
+}
+
+/* A <dl> of labels and values, each pair wrapped in a <div>.
+
+   Wide screens: a grid, labels in one column and values in the next.
+   Narrow screens: each pair is a row that wraps, so a value too long to sit
+   beside its label (a UUID, a timestamp, a path) moves onto its own line under
+   it instead of being squeezed into a narrow column. */
+@utility kv-list {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: --spacing(2) --spacing(6);
+  /* Values in a smaller font (MONO) still line up with their labels. */
+  align-items: baseline;
+  font-size: var(--text-sm);
+
+  & > div {
+    display: contents;
+  }
+
+  & dt {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-muted-foreground);
+  }
+
+  & dd {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  @variant max-sm {
+    display: flex;
+    flex-direction: column;
+    gap: --spacing(2);
+
+    & > div {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      column-gap: --spacing(4);
+    }
+
+    /* A fixed width keeps short values lined up. */
+    & dt {
+      flex: 0 0 --spacing(36);
+    }
+
+    /* Sized by its content, so it only stays beside the label if it fits
+       there whole; on its own line it can still wrap. */
+    & dd {
+      flex: 1 1 auto;
+    }
+  }
+}
+
+/* The catalog page's grid of posters: `--poster-columns` to a row (set by the
+   poster size slider, in ts/posters.ts), or fewer where posters would be
+   narrower than 3rem. Each column's minimum is exactly its share of the row,
+   less a hair so rounding can't push the last one onto the next row, and
+   auto-fill then fits as many as the row allows. */
+@utility poster-grid {
+  --columns: var(--poster-columns, 4);
+  --column-gap: --spacing(4);
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(
+      max(3rem, calc((100% - (var(--columns) - 1) * var(--column-gap)) / var(--columns) - 0.1px)),
+      1fr
+    )
+  );
+  gap: --spacing(6) var(--column-gap);
+}
+
+/* The page behind a modal dialog doesn't scroll along with it. */
+@layer base {
+  html:has(dialog:modal) {
+    overflow: hidden;
+  }
+}
+
+/* Buttons show a pointer, as links do. Tailwind v4 leaves them the browser's
+   default cursor. */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+/* While the first-run guide's card is showing, the end of the page can be
+   scrolled out from under it. */
+@layer base {
+  body:has(#onboarding > aside) main {
+    padding-bottom: --spacing(56);
+  }
+}
+
+/* A speech bubble's tail: a corner on the left edge of the card inside,
+   pointing at the owl beside it (see `owl_says`). It's drawn over the card's
+   border, so the two join. */
+@utility speech-bubble {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    /* Centered on the card's 1px border. */
+    left: -6.5px;
+    top: 50%;
+    width: 12px;
+    height: 12px;
+    translate: 0 -50%;
+    rotate: 45deg;
+    background: var(--color-card);
+    border-bottom: 1px solid var(--color-border);
+    border-left: 1px solid var(--color-border);
+  }
+}
+
+/* The owl in a circle the cream of its eyes, the same in either theme, so its
+   dark blue stands out on a dark page too. */
+@utility owl-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: calc(infinity * 1px);
+  background: oklch(0.97 0.025 85);
+  box-shadow:
+    0 0 0 1px var(--color-border),
+    var(--shadow-md);
+
+  & > img {
+    width: 80%;
+    height: auto;
+  }
+}

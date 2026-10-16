@@ -1,0 +1,26 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            i.id AS \"id!: InterpretationRowId\",\n            i.uuid AS \"uuid!: InterpretationUuid\"\n        FROM interpretations i\n        JOIN system_state ss\n        LEFT JOIN changesets c\n            ON c.id = i.changeset_id\n        WHERE\n            i.stopped_at IS NOT NULL\n            AND i.started_at < ?\n            AND i.id IS NOT ss.canonical_interpretation_id\n            AND (c.state IS NULL OR c.state <> 'open')\n        ORDER BY i.id\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: InterpretationRowId",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "uuid!: InterpretationUuid",
+        "ordinal": 1,
+        "type_info": "Blob"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "04eee9191765d636712ab727cb68190d2d29318cded103f61d14216cd76f198d"
+}

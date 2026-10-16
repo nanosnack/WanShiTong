@@ -1,0 +1,56 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        -- ?1 interpretation, ?2 work, ?3 identified, ?4 non_videos say which\n        -- files, in the clause list_file_tree shares; ?5 name, ?6 and ?7 the\n        -- folder's data source and path prefix (empty for every folder), ?8\n        -- and ?9 the cursor's data source name and path, ?10 the limit.\n        WITH fact_ingests AS (\n            SELECT ingest_id, data_source_id\n            FROM interpretation_ingests\n            WHERE interpretation_id = ?1\n        )\n        SELECT\n            m.data_source_uuid AS \"data_source_uuid!: DataSourceUuid\",\n            m.data_source_name,\n            m.rel_path,\n            coalesce(d.size, m.size) AS \"size?: i64\",\n            d.kind AS \"disc_kind?: String\",\n            d.duration_ms AS \"disc_duration_ms?: i64\",\n            (SELECT count(*) FROM disc_files df WHERE df.disc_id = d.id) AS \"disc_member_count?: i64\"\n        FROM complete_file_measurements m\n        JOIN fact_ingests fi\n            ON fi.ingest_id = m.ingest_id\n            AND fi.data_source_id = m.data_source_id\n        LEFT JOIN discs d\n            ON d.index_file_id = m.id\n        WHERE\n            (?5 IS NULL OR lower(m.rel_path) LIKE '%' || lower(?5) || '%')\n            -- The folder's files are a range of paths, which the files' index\n            -- serves: from the prefix up to it followed by the last code point,\n            -- which no path starts with in practice.\n            AND (?6 IS NULL OR m.data_source_uuid = ?6)\n            AND m.rel_path >= ?7\n            AND m.rel_path < ?7 || char(1114111)\n            -- A disc's other files: its index file stands for them.\n            AND m.id NOT IN (SELECT file_id FROM disc_files)\n            -- A work's files, all of them, or else those the filter selects.\n            AND (?2 IS NULL OR m.id IN (SELECT file_id FROM work_files WHERE work_uuid = ?2))\n            AND (\n                ?2 IS NOT NULL\n                OR m.id IN (\n                    SELECT file_id\n                    FROM unidentified_videos\n                    WHERE interpretation_id = ?1\n                )\n                OR (?3 AND ?4)\n                OR (\n                    ?3\n                    AND m.id IN (SELECT file_id FROM identified_files WHERE interpretation_id = ?1)\n                    AND m.id IN (SELECT file_id FROM video_files WHERE interpretation_id = ?1)\n                )\n                OR (\n                    ?4\n                    AND m.id NOT IN (SELECT file_id FROM video_files WHERE interpretation_id = ?1)\n                    AND m.id NOT IN (\n                        SELECT file_id FROM identified_files WHERE interpretation_id = ?1\n                    )\n                )\n            )\n            AND (\n                ?8 IS NULL\n                OR (lower(rel_path), rel_path, data_source_name) >= (lower(?9), ?9, ?8)\n            )\n        -- By path, ignoring case, whatever data source it's in.\n        ORDER BY\n            lower(rel_path),\n            rel_path,\n            data_source_name\n        LIMIT ?10;\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "data_source_uuid!: DataSourceUuid",
+        "ordinal": 0,
+        "type_info": "Blob"
+      },
+      {
+        "name": "data_source_name",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "rel_path",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "size?: i64",
+        "ordinal": 3,
+        "type_info": "Null"
+      },
+      {
+        "name": "disc_kind?: String",
+        "ordinal": 4,
+        "type_info": "Text"
+      },
+      {
+        "name": "disc_duration_ms?: i64",
+        "ordinal": 5,
+        "type_info": "Integer"
+      },
+      {
+        "name": "disc_member_count?: i64",
+        "ordinal": 6,
+        "type_info": "Null"
+      }
+    ],
+    "parameters": {
+      "Right": 10
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      null,
+      false,
+      true,
+      null
+    ]
+  },
+  "hash": "644f5887d0939905aa6f00901b6af7c1e7331f2c081d758b817688772ef67c38"
+}

@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT canonical_interpretation_id AS \"id?: _\"\n        FROM system_state\n        WHERE id = 1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id?: _",
+        "ordinal": 0,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 0
+    },
+    "nullable": [
+      true
+    ]
+  },
+  "hash": "f969e61e9b7387f345ad8486db6020881913a7f90513f4eec931e72a463c58b5"
+}

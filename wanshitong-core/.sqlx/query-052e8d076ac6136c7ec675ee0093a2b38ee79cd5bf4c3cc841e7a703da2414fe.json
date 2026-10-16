@@ -1,0 +1,50 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            ef.file_id AS \"file_id!: FileMeasurementRowId\",\n            s.uuid AS \"series_uuid!: TvSeriesUuid\",\n            s.name AS series_name,\n            se.number AS \"season_number: u32\",\n            e.number AS \"episode_number!: u32\",\n            e.title\n        FROM tv_episode_files ef\n        JOIN tv_episodes e\n            ON e.id = ef.episode_id\n        JOIN tv_seasons se\n            ON se.id = e.season_id\n        JOIN tv_series s\n            ON s.id = se.series_id\n        JOIN complete_file_measurements m\n            ON m.id = ef.file_id\n        WHERE\n            s.interpretation_id = ?1\n            AND m.data_source_uuid = ?2\n            AND m.rel_path >= ?3\n            AND m.rel_path < ?3 || char(1114111)\n        ORDER BY s.sort_name, s.id, se.number IS NULL, se.number, e.number\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "file_id!: FileMeasurementRowId",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "series_uuid!: TvSeriesUuid",
+        "ordinal": 1,
+        "type_info": "Blob"
+      },
+      {
+        "name": "series_name",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "season_number: u32",
+        "ordinal": 3,
+        "type_info": "Integer"
+      },
+      {
+        "name": "episode_number!: u32",
+        "ordinal": 4,
+        "type_info": "Integer"
+      },
+      {
+        "name": "title",
+        "ordinal": 5,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 3
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      false,
+      true
+    ]
+  },
+  "hash": "052e8d076ac6136c7ec675ee0093a2b38ee79cd5bf4c3cc841e7a703da2414fe"
+}

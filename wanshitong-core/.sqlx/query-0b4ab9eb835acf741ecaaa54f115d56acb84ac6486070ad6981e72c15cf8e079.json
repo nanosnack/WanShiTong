@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "\n            SELECT assertion_id AS \"id!\"\n            FROM interpretation_assertions\n            WHERE interpretation_id = ?\n            ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!",
+        "ordinal": 0,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "0b4ab9eb835acf741ecaaa54f115d56acb84ac6486070ad6981e72c15cf8e079"
+}

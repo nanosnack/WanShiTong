@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "\n            INSERT INTO audit_logs (interpretation_id, file_id, data)\n            VALUES (?, ?, ?)\n            ON CONFLICT (interpretation_id, file_id) DO UPDATE SET data = EXCLUDED.data\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 3
+    },
+    "nullable": []
+  },
+  "hash": "ccfb351eabf8bbf55b5352cc3bf7014b896795af85daf501daeb8e7caedd1b2a"
+}

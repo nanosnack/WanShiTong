@@ -1,0 +1,50 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            a.id AS \"id!\",\n            a.group_id AS \"group_id!\",\n            a.data_source_id AS \"data_source_id!\",\n            a.rel_path,\n            a.claim,\n            g.changeset_id AS \"changeset_id: ChangesetRowId\"\n        FROM assertions a\n        JOIN assertion_groups g\n            ON g.id = a.group_id\n        JOIN changesets c\n            ON c.id = g.changeset_id\n        JOIN data_sources ds\n            ON ds.id = a.data_source_id\n        WHERE\n            a.retracted_at IS NULL\n            AND ds.deleted_at IS NULL\n            AND (c.state = 'accepted' OR c.id = ?1)\n        ORDER BY a.id\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "group_id!",
+        "ordinal": 1,
+        "type_info": "Integer"
+      },
+      {
+        "name": "data_source_id!",
+        "ordinal": 2,
+        "type_info": "Integer"
+      },
+      {
+        "name": "rel_path",
+        "ordinal": 3,
+        "type_info": "Text"
+      },
+      {
+        "name": "claim",
+        "ordinal": 4,
+        "type_info": "Text"
+      },
+      {
+        "name": "changeset_id: ChangesetRowId",
+        "ordinal": 5,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "056115ed232a4a9f2f8d1dac76dba34a8be68a35523227f26f5545fb836651e6"
+}

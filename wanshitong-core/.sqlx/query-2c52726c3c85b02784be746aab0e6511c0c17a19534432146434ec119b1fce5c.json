@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT ix.rel_path AS \"index_path!\"\n        FROM file_measurements fm\n        JOIN disc_files df\n            ON df.file_id = fm.id\n        JOIN discs d\n            ON d.id = df.disc_id\n        JOIN file_measurements ix\n            ON ix.id = d.index_file_id\n        WHERE\n            fm.data_source_id = ?1\n            AND fm.rel_path = ?2\n            AND fm.ingest_id = (\n                SELECT max(i.id)\n                FROM ingests i\n                WHERE i.data_source_id = ?1 AND i.success = 1\n            )\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "index_path!",
+        "ordinal": 0,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "2c52726c3c85b02784be746aab0e6511c0c17a19534432146434ec119b1fce5c"
+}

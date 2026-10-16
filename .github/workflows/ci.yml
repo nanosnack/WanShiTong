@@ -1,0 +1,74 @@
+# Checks every push and pull request. Written for GitHub Actions, which
+# Forgejo Actions runs too. Every job needs only nix: on GitHub's runners it's
+# installed first; a Forgejo host runner has it. `runs-on` picks the runner by
+# the host: `ubuntu-latest` on GitHub, the Forgejo runner's label elsewhere.
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags-ignore: ["v*"]
+  pull_request:
+
+env:
+  # Queries are checked against the committed sqlx cache, not a database.
+  SQLX_OFFLINE: "true"
+  CARGO_TERM_COLOR: always
+
+jobs:
+  cargo:
+    name: Format, lint and test
+    runs-on: ${{ github.server_url == 'https://github.com' && 'ubuntu-latest' || 'role-ci-check' }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install nix if missing
+        run: |
+          if ! command -v nix >/dev/null; then
+            curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix \
+              | sh -s -- install linux --no-confirm
+            echo /nix/var/nix/profiles/default/bin >> "$GITHUB_PATH"
+          fi
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: cargo-${{ runner.os }}-
+
+      # The dev shell has the toolchain, ffmpeg for the tests, and the
+      # Tailwind and TypeScript CLIs for the build script.
+      - run: nix develop -c cargo fmt --all -- --check
+      - run: nix develop -c cargo clippy --workspace --all-targets -- -D warnings
+      - run: nix develop -c cargo test --workspace
+
+  nix:
+    name: Nix package
+    runs-on: ${{ github.server_url == 'https://github.com' && 'ubuntu-latest' || 'role-ci-check' }}
+    timeout-minutes: 120
+    # What the flake's NixOS module runs. The package's tests run in its
+    # build; the module's own test is a VM, which needs KVM, so it's left to
+    # `nix flake check` on a machine that has it.
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install nix if missing
+        run: |
+          if ! command -v nix >/dev/null; then
+            curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix \
+              | sh -s -- install linux --no-confirm
+            echo /nix/var/nix/profiles/default/bin >> "$GITHUB_PATH"
+          fi
+      - run: nix build --print-build-logs .#default
+      # Into the binary cache, where there is one: the repository variable
+      # ATTIC_ENDPOINT names it and an attic token opens it.
+      - name: Push to the binary cache
+        env:
+          ATTIC_ENDPOINT: ${{ vars.ATTIC_ENDPOINT }}
+          ATTIC_TOKEN: ${{ secrets.ATTIC_CI_PUSH_TOKEN }}
+        run: |
+          if [ -n "$ATTIC_ENDPOINT" ] && [ -n "$ATTIC_TOKEN" ] && command -v attic >/dev/null; then
+            attic login ci "$ATTIC_ENDPOINT" "$ATTIC_TOKEN"
+            attic push ci:nix-build-cache "$(nix path-info .#default)"
+          fi

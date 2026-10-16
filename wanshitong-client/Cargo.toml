@@ -1,0 +1,23 @@
+[package]
+name = "wanshitong-client"
+version.workspace = true
+edition = "2024"
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+bytes = "1"
+http = "1"
+http-body = "1"
+http-body-util = "0.1"
+serde.workspace = true
+serde_json.workspace = true
+serde_urlencoded = "0.7"
+thiserror.workspace = true
+tower-service = "0.3"
+uuid.workspace = true
+
+wanshitong-api = { path = "../wanshitong-api" }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt"] }

@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "INSERT INTO jellyfin_views (id, root_path) VALUES (?, ?)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": []
+  },
+  "hash": "a4d7b2875109bd70369f6247440fc98a9d6475ed8b6c26dd6e77348b1521dc75"
+}

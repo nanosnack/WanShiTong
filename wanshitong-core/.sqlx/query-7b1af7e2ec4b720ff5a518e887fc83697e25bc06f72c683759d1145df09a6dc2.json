@@ -1,0 +1,56 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            id AS \"id!\",\n            uuid AS \"uuid!: Uuid\",\n            name,\n            first_air_year,\n            tmdb_id,\n            imdb_id,\n            tvdb_id\n        FROM tv_series\n        WHERE interpretation_id = ?\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "uuid!: Uuid",
+        "ordinal": 1,
+        "type_info": "Blob"
+      },
+      {
+        "name": "name",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "first_air_year",
+        "ordinal": 3,
+        "type_info": "Integer"
+      },
+      {
+        "name": "tmdb_id",
+        "ordinal": 4,
+        "type_info": "Integer"
+      },
+      {
+        "name": "imdb_id",
+        "ordinal": 5,
+        "type_info": "Text"
+      },
+      {
+        "name": "tvdb_id",
+        "ordinal": 6,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      true,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  "hash": "7b1af7e2ec4b720ff5a518e887fc83697e25bc06f72c683759d1145df09a6dc2"
+}

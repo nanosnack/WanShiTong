@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        INSERT INTO data_sources (uuid, name, kind, created_at)\n        VALUES (?, ?, ?, ?)\n        RETURNING id AS \"id: _\"\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id: _",
+        "ordinal": 0,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 4
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "875e9bb67a6a9f168219ebc51780860c1649669b17c774c2e34a25edcf066e6c"
+}

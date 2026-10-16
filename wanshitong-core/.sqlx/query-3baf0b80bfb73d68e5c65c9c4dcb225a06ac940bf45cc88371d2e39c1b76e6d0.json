@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        INSERT INTO movies (\n            uuid,\n            interpretation_id,\n            title,\n            tmdb_id,\n            imdb_id,\n            tvdb_id,\n\n            original_title,\n            original_language,\n            tagline,\n            overview,\n            release_year,\n            release_month,\n            release_day,\n            runtime_seconds,\n            tmdb_poster_path,\n            sort_title\n        )\n        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\n        RETURNING id AS \"id!: MovieRowId\"\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: MovieRowId",
+        "ordinal": 0,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 16
+    },
+    "nullable": [
+      true
+    ]
+  },
+  "hash": "3baf0b80bfb73d68e5c65c9c4dcb225a06ac940bf45cc88371d2e39c1b76e6d0"
+}

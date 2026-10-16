@@ -1,0 +1,32 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            ds.uuid AS \"data_source_uuid!: DataSourceUuid\",\n            ds.name AS data_source_name,\n            fm.rel_path\n        FROM unidentified_videos uv\n        JOIN file_measurements fm\n            ON fm.id = uv.file_id\n        JOIN data_sources ds\n            ON ds.id = fm.data_source_id\n        WHERE uv.interpretation_id = ?\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "data_source_uuid!: DataSourceUuid",
+        "ordinal": 0,
+        "type_info": "Blob"
+      },
+      {
+        "name": "data_source_name",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "rel_path",
+        "ordinal": 2,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "51f891f3b12e59a4c529e34b054e2a0ef127d85929cb89311ab571ea07046d93"
+}

@@ -1,0 +1,3 @@
+disallowed-methods = [
+    { path = "wanshitong_core::commands::set_canonical_interpretation", reason = "use change_canonical_interpretation, which refreshes views" },
+]

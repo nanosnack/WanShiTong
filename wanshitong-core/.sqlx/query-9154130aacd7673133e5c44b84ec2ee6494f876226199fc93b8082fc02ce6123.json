@@ -1,0 +1,32 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            i.uuid AS \"uuid!: InterpretationUuid\",\n            c.uuid AS \"changeset_uuid?: ChangesetUuid\",\n            c.state AS \"changeset_state?\"\n        FROM interpretations i\n        LEFT JOIN changesets c\n            ON c.id = i.changeset_id\n        WHERE i.id = ?\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "uuid!: InterpretationUuid",
+        "ordinal": 0,
+        "type_info": "Blob"
+      },
+      {
+        "name": "changeset_uuid?: ChangesetUuid",
+        "ordinal": 1,
+        "type_info": "Blob"
+      },
+      {
+        "name": "changeset_state?",
+        "ordinal": 2,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      true,
+      true
+    ]
+  },
+  "hash": "9154130aacd7673133e5c44b84ec2ee6494f876226199fc93b8082fc02ce6123"
+}

@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "INSERT INTO interpretation_assertions (interpretation_id, assertion_id) VALUES (?, ?)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": []
+  },
+  "hash": "861e2ee0b1e97177aaabae0a5d80bdf94275a98ac073c547ca5e2f399026a219"
+}

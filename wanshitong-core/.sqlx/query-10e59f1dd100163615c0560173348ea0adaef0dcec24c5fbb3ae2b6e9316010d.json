@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        INSERT INTO tv_series (\n            uuid,\n            interpretation_id,\n            name,\n            original_name,\n            tmdb_id,\n            imdb_id,\n            tvdb_id,\n\n            original_language,\n            tagline,\n            overview,\n            first_air_year,\n            first_air_month,\n            first_air_day,\n            tmdb_poster_path,\n            sort_name\n        )\n        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\n        RETURNING id AS \"id!: TvSeriesRowId\"\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: TvSeriesRowId",
+        "ordinal": 0,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 15
+    },
+    "nullable": [
+      true
+    ]
+  },
+  "hash": "10e59f1dd100163615c0560173348ea0adaef0dcec24c5fbb3ae2b6e9316010d"
+}

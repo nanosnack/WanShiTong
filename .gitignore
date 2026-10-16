@@ -1,0 +1,8 @@
+/target
+.DS_Store
+.env
+database.sqlite
+database.sqlite-shm
+database.sqlite-wal
+.direnv
+/result

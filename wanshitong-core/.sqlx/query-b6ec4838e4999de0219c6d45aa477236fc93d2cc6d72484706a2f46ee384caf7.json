@@ -1,0 +1,26 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT id AS \"id!: ChangesetRowId\", state FROM changesets WHERE uuid = ?",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: ChangesetRowId",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "state",
+        "ordinal": 1,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      true,
+      false
+    ]
+  },
+  "hash": "b6ec4838e4999de0219c6d45aa477236fc93d2cc6d72484706a2f46ee384caf7"
+}

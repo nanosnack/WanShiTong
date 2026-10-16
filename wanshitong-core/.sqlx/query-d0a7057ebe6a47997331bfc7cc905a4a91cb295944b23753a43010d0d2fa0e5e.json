@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "\n                INSERT INTO tv_episodes (season_id, number, title)\n                VALUES (?, ?, ?)\n                ON CONFLICT DO UPDATE SET title = coalesce(title, EXCLUDED.title)\n                RETURNING id AS \"id!: TvEpisodeRowId\"\n                ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: TvEpisodeRowId",
+        "ordinal": 0,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 3
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "d0a7057ebe6a47997331bfc7cc905a4a91cb295944b23753a43010d0d2fa0e5e"
+}

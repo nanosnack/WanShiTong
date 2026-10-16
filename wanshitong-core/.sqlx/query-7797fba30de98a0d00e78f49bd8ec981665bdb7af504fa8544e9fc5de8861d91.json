@@ -1,0 +1,26 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT ds.name, fs.root_path\n        FROM data_sources ds\n        JOIN fs_data_sources fs\n            ON fs.id = ds.id\n        WHERE ds.deleted_at IS NULL\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "name",
+        "ordinal": 0,
+        "type_info": "Text"
+      },
+      {
+        "name": "root_path",
+        "ordinal": 1,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 0
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "7797fba30de98a0d00e78f49bd8ec981665bdb7af504fa8544e9fc5de8861d91"
+}

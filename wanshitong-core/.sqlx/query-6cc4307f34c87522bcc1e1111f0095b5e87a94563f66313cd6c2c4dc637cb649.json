@@ -1,0 +1,68 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            g.uuid AS \"uuid!: AssertionUuid\",\n            g.created_at,\n            g.rationale,\n            g.confidence AS \"confidence: f64\",\n            a.claim,\n            ds.uuid AS \"data_source_uuid!: DataSourceUuid\",\n            ds.name AS data_source_name,\n            a.rel_path,\n            a.retracted_at\n        FROM assertions a\n        JOIN assertion_groups g\n            ON g.id = a.group_id\n        JOIN changesets c\n            ON c.id = g.changeset_id\n        JOIN data_sources ds\n            ON ds.id = a.data_source_id\n        WHERE a.retracted_at IS NULL AND c.state = 'accepted'\n        ORDER BY g.created_at DESC, g.id DESC, a.id\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "uuid!: AssertionUuid",
+        "ordinal": 0,
+        "type_info": "Blob"
+      },
+      {
+        "name": "created_at",
+        "ordinal": 1,
+        "type_info": "Integer"
+      },
+      {
+        "name": "rationale",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "confidence: f64",
+        "ordinal": 3,
+        "type_info": "Float"
+      },
+      {
+        "name": "claim",
+        "ordinal": 4,
+        "type_info": "Text"
+      },
+      {
+        "name": "data_source_uuid!: DataSourceUuid",
+        "ordinal": 5,
+        "type_info": "Blob"
+      },
+      {
+        "name": "data_source_name",
+        "ordinal": 6,
+        "type_info": "Text"
+      },
+      {
+        "name": "rel_path",
+        "ordinal": 7,
+        "type_info": "Text"
+      },
+      {
+        "name": "retracted_at",
+        "ordinal": 8,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 0
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "6cc4307f34c87522bcc1e1111f0095b5e87a94563f66313cd6c2c4dc637cb649"
+}

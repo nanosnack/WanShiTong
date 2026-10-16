@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        INSERT INTO config_snapshots (created_at, config)\n        VALUES (?, ?)\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": []
+  },
+  "hash": "d6fc1795bacd8553ac256235acc0ba8682dc5def5fc844c4d4f860919552e5c8"
+}

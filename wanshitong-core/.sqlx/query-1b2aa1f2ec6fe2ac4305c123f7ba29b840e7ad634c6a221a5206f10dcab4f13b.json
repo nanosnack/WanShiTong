@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "UPDATE ingests\n         SET\n             files_seen = ?,\n             files_probed = ?,\n             files_recorded = ?,\n             media_files_recorded = ?,\n             files_failed = ?,\n             stopped_at = ?,\n             success = ?\n         WHERE id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 8
+    },
+    "nullable": []
+  },
+  "hash": "1b2aa1f2ec6fe2ac4305c123f7ba29b840e7ad634c6a221a5206f10dcab4f13b"
+}

@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        UPDATE assertions\n        SET retracted_at = ?\n        WHERE\n            retracted_at IS NULL\n            AND group_id IN (\n                SELECT assertion_group_id\n                FROM changeset_retractions\n                WHERE changeset_id = ?\n            )\n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": []
+  },
+  "hash": "6086df4448c18285735779b8039ae69f5ed153c8eb282c698aad020f7bdcbbeb"
+}

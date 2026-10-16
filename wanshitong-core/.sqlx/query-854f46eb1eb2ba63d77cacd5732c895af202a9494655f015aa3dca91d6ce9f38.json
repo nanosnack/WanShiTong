@@ -1,0 +1,50 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            se.number AS \"season_number: u32\",\n            e.number AS \"episode_number!: u32\",\n            e.title AS episode_title,\n            ds.uuid AS \"data_source_uuid?: DataSourceUuid\",\n            fm.rel_path AS \"rel_path?\",\n            al.data AS \"audit_log?\"\n        FROM tv_seasons se\n        JOIN tv_series s\n            ON s.id = se.series_id\n        JOIN tv_episodes e\n            ON e.season_id = se.id\n        LEFT JOIN tv_episode_files ef\n            ON ef.episode_id = e.id\n        LEFT JOIN file_measurements fm\n            ON fm.id = ef.file_id\n        LEFT JOIN data_sources ds\n            ON ds.id = fm.data_source_id\n        LEFT JOIN audit_logs al\n            ON al.file_id = fm.id\n            AND al.interpretation_id = s.interpretation_id\n        WHERE se.series_id = ?\n        ORDER BY se.number IS NULL, se.number, e.number, fm.rel_path\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "season_number: u32",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "episode_number!: u32",
+        "ordinal": 1,
+        "type_info": "Integer"
+      },
+      {
+        "name": "episode_title",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "data_source_uuid?: DataSourceUuid",
+        "ordinal": 3,
+        "type_info": "Blob"
+      },
+      {
+        "name": "rel_path?",
+        "ordinal": 4,
+        "type_info": "Text"
+      },
+      {
+        "name": "audit_log?",
+        "ordinal": 5,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      true,
+      false,
+      true,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "854f46eb1eb2ba63d77cacd5732c895af202a9494655f015aa3dca91d6ce9f38"
+}

@@ -1,0 +1,44 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            se.series_id,\n            se.number AS \"season: u32\",\n            e.number AS \"episode!: u32\",\n            fm.rel_path,\n            fs.root_path\n        FROM tv_series s\n        JOIN tv_seasons se\n            ON se.series_id = s.id\n        JOIN tv_episodes e\n            ON e.season_id = se.id\n        JOIN tv_episode_files ef\n            ON ef.episode_id = e.id\n        JOIN file_measurements fm\n            ON fm.id = ef.file_id\n        JOIN fs_data_sources fs\n            ON fs.id = fm.data_source_id\n        WHERE s.interpretation_id = ?1\n        ORDER BY se.series_id, se.number IS NULL, se.number, e.number, fm.rel_path\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "series_id",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "season: u32",
+        "ordinal": 1,
+        "type_info": "Integer"
+      },
+      {
+        "name": "episode!: u32",
+        "ordinal": 2,
+        "type_info": "Integer"
+      },
+      {
+        "name": "rel_path",
+        "ordinal": 3,
+        "type_info": "Text"
+      },
+      {
+        "name": "root_path",
+        "ordinal": 4,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      true,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "18fa38e8fa8a1a2fa9c6ecc8338e751479d0b54927e7edf89558f735598294d0"
+}

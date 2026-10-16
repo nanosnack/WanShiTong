@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT id AS \"id!: _\"\n        FROM ingests\n        WHERE data_source_id = ? AND success = 1\n        ORDER BY id DESC\n        LIMIT 1;",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: _",
+        "ordinal": 0,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      true
+    ]
+  },
+  "hash": "8e10668a735a3e81d3bb396e4375981cab0fb3c1930c2ab83dc8b16b8e4a6629"
+}

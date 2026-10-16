@@ -1,0 +1,122 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            -- Movie identity\n            m.id AS \"id!: MovieRowId\",\n            m.interpretation_id AS \"interpretation_id!: InterpretationRowId\",\n            m.title,\n            m.tmdb_id,\n            m.imdb_id,\n            m.tvdb_id,\n\n            -- Movie metadata\n            m.original_title,\n            m.original_language,\n            m.release_year,\n            m.tagline,\n            m.overview,\n            m.runtime_seconds,\n            m.tmdb_poster_path,\n\n            -- Data source\n            ds.uuid AS \"data_source_uuid: DataSourceUuid\",\n            ds.name AS data_source_name,\n\n            -- File\n            fm.rel_path,\n\n            -- Ingest\n            i.uuid AS \"ingest_uuid: IngestUuid\",\n\n            -- Media measurements\n            fmm.data AS \"media_data?\"\n\n        FROM movies m\n\n        -- Chosen file for this movie\n        JOIN movie_files mf\n            ON mf.movie_id = m.id\n\n        JOIN file_measurements fm\n            ON fm.id = mf.file_id\n\n        -- Media measurements\n        LEFT JOIN file_media_measurements fmm\n            ON fmm.id = fm.media_measurement_id\n\n        -- Ingest + data source provenance\n        JOIN ingests i\n            ON i.id = fm.ingest_id\n\n        JOIN data_sources ds\n            ON ds.id = fm.data_source_id\n\n        WHERE m.uuid = ?1\n\n        -- A movie can have several main files, or none. Show a main file if\n        -- there is one, then a file of unknown role, then an extra.\n        ORDER BY\n            CASE WHEN mf.role = 'main' THEN 0 WHEN mf.role IS NULL THEN 1 ELSE 2 END,\n            fm.rel_path\n        LIMIT 1;\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: MovieRowId",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "interpretation_id!: InterpretationRowId",
+        "ordinal": 1,
+        "type_info": "Integer"
+      },
+      {
+        "name": "title",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "tmdb_id",
+        "ordinal": 3,
+        "type_info": "Integer"
+      },
+      {
+        "name": "imdb_id",
+        "ordinal": 4,
+        "type_info": "Text"
+      },
+      {
+        "name": "tvdb_id",
+        "ordinal": 5,
+        "type_info": "Integer"
+      },
+      {
+        "name": "original_title",
+        "ordinal": 6,
+        "type_info": "Text"
+      },
+      {
+        "name": "original_language",
+        "ordinal": 7,
+        "type_info": "Text"
+      },
+      {
+        "name": "release_year",
+        "ordinal": 8,
+        "type_info": "Integer"
+      },
+      {
+        "name": "tagline",
+        "ordinal": 9,
+        "type_info": "Text"
+      },
+      {
+        "name": "overview",
+        "ordinal": 10,
+        "type_info": "Text"
+      },
+      {
+        "name": "runtime_seconds",
+        "ordinal": 11,
+        "type_info": "Integer"
+      },
+      {
+        "name": "tmdb_poster_path",
+        "ordinal": 12,
+        "type_info": "Text"
+      },
+      {
+        "name": "data_source_uuid: DataSourceUuid",
+        "ordinal": 13,
+        "type_info": "Blob"
+      },
+      {
+        "name": "data_source_name",
+        "ordinal": 14,
+        "type_info": "Text"
+      },
+      {
+        "name": "rel_path",
+        "ordinal": 15,
+        "type_info": "Text"
+      },
+      {
+        "name": "ingest_uuid: IngestUuid",
+        "ordinal": 16,
+        "type_info": "Blob"
+      },
+      {
+        "name": "media_data?",
+        "ordinal": 17,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      true,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "36a59ef57e968633d4749e2f3432000c37033a7a4d40d2d13aa0b748c6e6e981"
+}

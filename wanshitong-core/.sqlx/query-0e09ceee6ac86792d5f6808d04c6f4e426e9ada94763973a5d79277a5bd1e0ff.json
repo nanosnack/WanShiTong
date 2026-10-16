@@ -1,0 +1,122 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        WITH fact_ingests AS (\n            SELECT ingest_id\n            FROM interpretation_ingests\n            WHERE interpretation_id = ?\n        )\n        SELECT\n            m.id AS \"id!: FileMeasurementRowId\",\n            m.data_source_uuid AS \"data_source_uuid!: DataSourceUuid\",\n            m.data_source_name,\n            m.rel_path,\n            m.device,\n            m.inode,\n            m.size,\n            m.mime_type,\n            m.mtime,\n            m.ctime,\n            m.hardlink_count,\n            m.is_symlink,\n            m.media_measurements AS \"media_measurements?: String\",\n            d.kind AS \"disc_kind?: String\",\n            d.root_path AS \"disc_root?: String\",\n            d.size AS \"disc_size?: i64\",\n            d.duration_ms AS \"disc_duration_ms?: i64\",\n            (SELECT count(*) FROM disc_files df WHERE df.disc_id = d.id) AS \"disc_member_count?: i64\"\n        FROM complete_file_measurements m\n        JOIN fact_ingests fi\n            ON fi.ingest_id = m.ingest_id\n        LEFT JOIN discs d\n            ON d.index_file_id = m.id\n        -- A disc's other files: its index file stands for them.\n        WHERE m.id NOT IN (SELECT file_id FROM disc_files)\n        ORDER BY\n            data_source_name,\n            rel_path;\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!: FileMeasurementRowId",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "data_source_uuid!: DataSourceUuid",
+        "ordinal": 1,
+        "type_info": "Blob"
+      },
+      {
+        "name": "data_source_name",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "rel_path",
+        "ordinal": 3,
+        "type_info": "Text"
+      },
+      {
+        "name": "device",
+        "ordinal": 4,
+        "type_info": "Integer"
+      },
+      {
+        "name": "inode",
+        "ordinal": 5,
+        "type_info": "Integer"
+      },
+      {
+        "name": "size",
+        "ordinal": 6,
+        "type_info": "Integer"
+      },
+      {
+        "name": "mime_type",
+        "ordinal": 7,
+        "type_info": "Text"
+      },
+      {
+        "name": "mtime",
+        "ordinal": 8,
+        "type_info": "Integer"
+      },
+      {
+        "name": "ctime",
+        "ordinal": 9,
+        "type_info": "Integer"
+      },
+      {
+        "name": "hardlink_count",
+        "ordinal": 10,
+        "type_info": "Integer"
+      },
+      {
+        "name": "is_symlink",
+        "ordinal": 11,
+        "type_info": "Integer"
+      },
+      {
+        "name": "media_measurements?: String",
+        "ordinal": 12,
+        "type_info": "Text"
+      },
+      {
+        "name": "disc_kind?: String",
+        "ordinal": 13,
+        "type_info": "Text"
+      },
+      {
+        "name": "disc_root?: String",
+        "ordinal": 14,
+        "type_info": "Text"
+      },
+      {
+        "name": "disc_size?: i64",
+        "ordinal": 15,
+        "type_info": "Integer"
+      },
+      {
+        "name": "disc_duration_ms?: i64",
+        "ordinal": 16,
+        "type_info": "Integer"
+      },
+      {
+        "name": "disc_member_count?: i64",
+        "ordinal": 17,
+        "type_info": "Null"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      true,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      true,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      null
+    ]
+  },
+  "hash": "0e09ceee6ac86792d5f6808d04c6f4e426e9ada94763973a5d79277a5bd1e0ff"
+}

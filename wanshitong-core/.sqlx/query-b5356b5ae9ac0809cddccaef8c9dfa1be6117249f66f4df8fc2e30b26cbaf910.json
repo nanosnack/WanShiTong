@@ -1,0 +1,56 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            mf.file_id AS \"file_id!: FileMeasurementRowId\",\n            mo.uuid AS \"uuid!: MovieUuid\",\n            mo.title,\n            mo.release_year,\n            mf.role,\n            mf.manifestation AS \"manifestation: u32\",\n            mf.part AS \"part: u32\"\n        FROM movie_files mf\n        JOIN movies mo\n            ON mo.id = mf.movie_id\n        WHERE\n            mf.file_id IN (SELECT value FROM json_each(?1))\n            AND mo.interpretation_id = ?2\n        ORDER BY mo.sort_title, mo.id\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "file_id!: FileMeasurementRowId",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "uuid!: MovieUuid",
+        "ordinal": 1,
+        "type_info": "Blob"
+      },
+      {
+        "name": "title",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "release_year",
+        "ordinal": 3,
+        "type_info": "Integer"
+      },
+      {
+        "name": "role",
+        "ordinal": 4,
+        "type_info": "Text"
+      },
+      {
+        "name": "manifestation: u32",
+        "ordinal": 5,
+        "type_info": "Integer"
+      },
+      {
+        "name": "part: u32",
+        "ordinal": 6,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  "hash": "b5356b5ae9ac0809cddccaef8c9dfa1be6117249f66f4df8fc2e30b26cbaf910"
+}

@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT g.uuid AS \"uuid!: AssertionUuid\"\n        FROM changeset_retractions r\n        JOIN assertion_groups g\n            ON g.id = r.assertion_group_id\n        WHERE r.changeset_id = ?\n        ORDER BY g.created_at DESC, g.id DESC\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "uuid!: AssertionUuid",
+        "ordinal": 0,
+        "type_info": "Blob"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "76f1751b05158605d462482f922c2e88290feac05a5f01f1e36eeb6e42916ccb"
+}

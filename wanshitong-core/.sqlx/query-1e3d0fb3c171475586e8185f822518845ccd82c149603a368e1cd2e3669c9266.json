@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT assertion_group_id AS \"group_id!\"\n        FROM changeset_retractions\n        WHERE changeset_id = ?\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "group_id!",
+        "ordinal": 0,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "1e3d0fb3c171475586e8185f822518845ccd82c149603a368e1cd2e3669c9266"
+}

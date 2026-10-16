@@ -1,0 +1,26 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT DISTINCT\n            ds.uuid AS \"uuid!: DataSourceUuid\",\n            ds.name AS \"name!\"\n        FROM (\n            SELECT ef.file_id\n            FROM tv_seasons se\n            JOIN tv_episodes e\n                ON e.season_id = se.id\n            JOIN tv_episode_files ef\n                ON ef.episode_id = e.id\n            WHERE se.series_id = ?1\n            UNION\n            SELECT file_id\n            FROM tv_series_extra_files\n            WHERE series_id = ?1\n        ) f\n        JOIN file_measurements fm\n            ON fm.id = f.file_id\n        JOIN data_sources ds\n            ON ds.id = fm.data_source_id\n        ORDER BY ds.name\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "uuid!: DataSourceUuid",
+        "ordinal": 0,
+        "type_info": "Blob"
+      },
+      {
+        "name": "name!",
+        "ordinal": 1,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "5f240034a2cfb6f9edfdc0cf4b215a0909a8e32e70968c3c734a69e022943b6a"
+}

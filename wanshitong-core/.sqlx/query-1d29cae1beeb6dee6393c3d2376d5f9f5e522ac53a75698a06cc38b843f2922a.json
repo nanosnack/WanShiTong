@@ -1,0 +1,50 @@
+{
+  "db_name": "SQLite",
+  "query": "\n        SELECT\n            s.id AS \"work_id!\",\n            se.number AS \"season: u32\",\n            e.number AS \"episode!: u32\",\n            ds.uuid AS \"data_source_uuid!: DataSourceUuid\",\n            ds.name AS data_source_name,\n            fm.rel_path\n        FROM tv_episode_files ef\n        JOIN tv_episodes e\n            ON e.id = ef.episode_id\n        JOIN tv_seasons se\n            ON se.id = e.season_id\n        JOIN tv_series s\n            ON s.id = se.series_id\n        JOIN file_measurements fm\n            ON fm.id = ef.file_id\n        JOIN data_sources ds\n            ON ds.id = fm.data_source_id\n        WHERE s.interpretation_id = ?\n        ",
+  "describe": {
+    "columns": [
+      {
+        "name": "work_id!",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "season: u32",
+        "ordinal": 1,
+        "type_info": "Integer"
+      },
+      {
+        "name": "episode!: u32",
+        "ordinal": 2,
+        "type_info": "Integer"
+      },
+      {
+        "name": "data_source_uuid!: DataSourceUuid",
+        "ordinal": 3,
+        "type_info": "Blob"
+      },
+      {
+        "name": "data_source_name",
+        "ordinal": 4,
+        "type_info": "Text"
+      },
+      {
+        "name": "rel_path",
+        "ordinal": 5,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      true,
+      true,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "1d29cae1beeb6dee6393c3d2376d5f9f5e522ac53a75698a06cc38b843f2922a"
+}
