@@ -51,103 +51,96 @@ pub(super) fn corroborates_runtime_match(
     years_agree || titled
 }
 
-/// A search result, with what matching it needs.
+/// A search result, with what choosing it needs.
 #[derive(Clone, Copy)]
 pub(super) struct Candidate<'a> {
-    /// The title and original title.
+    /// The title and original title, or for an entry for a cut of another
+    /// movie, e.g. `Kingdom Of Heaven (Director's Cut)`, that movie's.
     pub(super) titles: [&'a str; 2],
     pub(super) runtime_minutes: Option<u32>,
-    /// Whether it's of the file's year, give or take one.
-    pub(super) year_agrees: bool,
+    /// How many years it's from the file's, if both are known.
+    pub(super) years_off: Option<u32>,
 }
 
 #[derive(Debug, PartialEq)]
-pub(super) struct RuntimeMatch {
-    /// The candidate's position in the results.
-    pub(super) index: usize,
-    pub(super) minute_diff: i64,
-    pub(super) similarity: f32,
-}
-
-/// Of the candidates as long as the file, within
-/// [`RUNTIME_TOLERANCE_MINUTES`], the one titled most like what was searched
-/// for, then of the file's year, then the closest in length, then the first.
-/// A year says more than a minute or two, as files run a minute or two off
-/// the knowledge base's runtimes, e.g. a "White Snake" of 2019 and 99 minutes
-/// for a file of 2019 and 102, rather than one of 2021 and 101.
-///
-/// Runtime is a *strong* signal, but not enough on its own: a series' movies
-/// can be about as long as each other. And TMDB generally doesn't publish
-/// metadata about e.g. director's cuts.
-pub(super) fn best_runtime_match<'a>(
-    query: &str,
-    file_runtime: Duration,
-    candidates: impl IntoIterator<Item = Candidate<'a>>,
-    fits: impl Fn(usize, i64) -> bool,
-) -> Option<RuntimeMatch> {
-    candidates
-        .into_iter()
-        .enumerate()
-        .filter_map(|(index, candidate)| {
-            let RuntimeFit::Match { minute_diff } =
-                runtime_fit(file_runtime, candidate.runtime_minutes)
-            else {
-                return None;
-            };
-            if !fits(index, minute_diff) {
-                return None;
-            }
-            Some((
-                candidate.year_agrees,
-                RuntimeMatch {
-                    index,
-                    minute_diff,
-                    similarity: title_similarity(query, candidate.titles),
-                },
-            ))
-        })
-        .min_by(|(a_year, a), (b_year, b)| {
-            b.similarity
-                .total_cmp(&a.similarity)
-                .then(b_year.cmp(a_year))
-                .then(a.minute_diff.cmp(&b.minute_diff))
-                .then(a.index.cmp(&b.index))
-        })
-        .map(|(_, matched)| matched)
-}
-
-#[derive(Debug, PartialEq)]
-pub(super) struct Unmatched {
+pub(super) struct Chosen {
     /// The candidate's position in the results.
     pub(super) index: usize,
     pub(super) fit: RuntimeFit,
     pub(super) similarity: f32,
 }
 
-/// Of the candidates that aren't as long as the file, the one titled most like
-/// what was searched for, then the first, unless its runtime rules out the
-/// file being it. None if every candidate's does.
-pub(super) fn best_unmatched_candidate<'a>(
+/// Of the candidates the file could be, the one that [`match_score`] scores
+/// highest, then the first. None if every candidate's runtime rules out the
+/// file being it, e.g. an episode's numbers finding features.
+///
+/// Title, runtime and year compete, rather than any one gating the others:
+/// a runtime match titled a little worse loses to a movie titled as searched
+/// for that the file is likely another cut of, e.g. a TV edit of "Wumbo" at
+/// 96 minutes to TMDB's 103 rather than "Outlaw Wumbo" at 96, but not to one
+/// far shorter, e.g. Iñárritu's "Birdman or (The Unexpected Virtue of
+/// Ignorance)" at 120 minutes for a 2-hour `Birdman.2014` rather than "The
+/// Birdman" of 2014 at 76.
+pub(super) fn best_candidate<'a>(
     query: &str,
     file_runtime: Duration,
     candidates: impl IntoIterator<Item = Candidate<'a>>,
-) -> Option<Unmatched> {
+) -> Option<Chosen> {
     candidates
         .into_iter()
         .enumerate()
         .filter_map(|(index, candidate)| {
             let fit = runtime_fit(file_runtime, candidate.runtime_minutes);
-            matches!(fit, RuntimeFit::OtherCut | RuntimeFit::Unknown).then(|| Unmatched {
-                index,
-                fit,
-                similarity: title_similarity(query, candidate.titles),
-            })
+            if fit == RuntimeFit::Contradicts {
+                return None;
+            }
+            let similarity = title_similarity(query, candidate.titles);
+            let score = match_score(file_runtime, candidate, similarity);
+            Some((
+                score,
+                Chosen {
+                    index,
+                    fit,
+                    similarity,
+                },
+            ))
         })
-        .min_by(|a, b| {
-            b.similarity
-                .total_cmp(&a.similarity)
-                .then(a.index.cmp(&b.index))
-        })
+        .min_by(|(a_score, a), (b_score, b)| b_score.total_cmp(a_score).then(a.index.cmp(&b.index)))
+        .map(|(_, chosen)| chosen)
+}
+
+/// How well a candidate fits the file: how alike its title is to what was
+/// searched for, how close its runtime is to the file's, and whether it's of
+/// the file's year. A year says more than a minute or two, as files run a
+/// minute or two off the knowledge base's runtimes, e.g. a "White Snake" of
+/// 2019 and 99 minutes for a file of 2019 and 102, rather than one of 2021
+/// and 101.
+pub(super) fn match_score(file_runtime: Duration, candidate: Candidate, similarity: f32) -> f32 {
+    let runtime = match candidate.runtime_minutes {
+        Some(minutes) => RUNTIME_WEIGHT * runtime_closeness(file_runtime, minutes),
+        // Says nothing against the file being it, nor for, e.g. another "The
+        // Covenant" than Guy Ritchie's.
+        None => UNKNOWN_RUNTIME_SCORE,
+    };
+    // A festival premiere and a release can differ by one, e.g.
+    // `Split.2016` for Shyamalan's, which TMDB dates 2017.
+    let year = match candidate.years_off {
+        Some(0 | 1) => YEAR_WEIGHT,
+        _ => 0.0,
+    };
+    TITLE_WEIGHT * similarity + runtime + year
+}
+
+/// How close a file's runtime is to `minutes`, from 1 (within
+/// [`RUNTIME_SLACK_MINUTES`]) falling off smoothly to 0, by how far off it is
+/// as a share of the movie's runtime: a few minutes either way is likely
+/// the knowledge base's timing or another cut, where a third more or less is
+/// likely another movie.
+pub(super) fn runtime_closeness(file_runtime: Duration, minutes: u32) -> f32 {
+    let file_minutes = file_runtime.as_secs_f32() / 60.0;
+    let off = ((file_minutes - minutes as f32).abs() - RUNTIME_SLACK_MINUTES).max(0.0);
+    let relative = off / minutes.max(1) as f32;
+    (-(relative / RUNTIME_SPREAD).powi(2)).exp()
 }
 
 /// How a movie's runtime on the knowledge base compares with a file's.
@@ -208,5 +201,20 @@ pub(super) const MIN_CUT_RATIO: f32 = 0.75;
 /// How much longer, e.g. Das Boot's director's cut is 1.4 times its
 /// theatrical cut.
 pub(super) const MAX_CUT_RATIO: f32 = 2.0;
+/// The weight of a candidate's title similarity in its [`match_score`].
+pub(super) const TITLE_WEIGHT: f32 = 1.0;
+/// The weight of its runtime's closeness, as much as its title's: an exact
+/// runtime outweighs a title with a few more words than was searched for.
+pub(super) const RUNTIME_WEIGHT: f32 = 1.0;
+/// The runtime score of a candidate whose runtime is unknown, halfway.
+pub(super) const UNKNOWN_RUNTIME_SCORE: f32 = 0.5;
+/// The score of a candidate of the file's year, give or take one.
+pub(super) const YEAR_WEIGHT: f32 = 0.2;
+/// How far off a runtime may be and still be as close as can be: TMDB times
+/// movies in whole minutes.
+pub(super) const RUNTIME_SLACK_MINUTES: f32 = 1.0;
+/// How far off a runtime is, as a share of the movie's, for its closeness to
+/// fall to about a third, e.g. 12 minutes of a 100-minute movie.
+pub(super) const RUNTIME_SPREAD: f32 = 0.12;
 /// How many of a search's results are checked against the file's runtime.
 pub(super) const RUNTIME_CANDIDATES: usize = 5;

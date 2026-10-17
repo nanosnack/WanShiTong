@@ -65,66 +65,92 @@ fn either_title_counts_for_the_title_bonus() {
     assert_eq!(bonus(["The Golden Bird", "The Golden Bird"]), 0.0);
 }
 
+fn candidate<'a>(title: &'a str, runtime_minutes: Option<u32>) -> Candidate<'a> {
+    Candidate {
+        titles: [title, title],
+        runtime_minutes,
+        years_off: None,
+    }
+}
+
+fn chosen<'a>(
+    query: &str,
+    file_minutes: u64,
+    candidates: impl IntoIterator<Item = Candidate<'a>>,
+) -> Option<(usize, RuntimeFit)> {
+    best_candidate(query, Duration::from_secs(file_minutes * 60), candidates)
+        .map(|chosen| (chosen.index, chosen.fit))
+}
+
 /// The movies of the Code Geass trilogy are about as long as each other,
 /// and TMDB lists Transgression first when searching for Initiation.
 #[test]
 fn prefers_the_best_titled_of_the_results_as_long_as_the_file() {
-    let candidate = |title, runtime_minutes| Candidate {
-        titles: [title, title],
-        runtime_minutes: Some(runtime_minutes),
-        year_agrees: false,
-    };
     let results = [
         candidate(
             "Code Geass: Lelouch of the Rebellion II - Transgression",
-            136,
+            Some(136),
         ),
-        candidate("Code Geass: Lelouch of the Rebellion I - Initiation", 135),
+        candidate(
+            "Code Geass: Lelouch of the Rebellion I - Initiation",
+            Some(135),
+        ),
         candidate(
             "Code Geass: Lelouch of the Rebellion III - Glorification",
-            140,
+            Some(140),
         ),
         // Titled more like it, but not as long.
-        candidate("Code Geass: Lelouch of the Rebellion", 25),
-        Candidate {
-            titles: ["Code Geass: Lelouch of the Rebellion - Initiation", ""],
-            runtime_minutes: None,
-            year_agrees: false,
-        },
+        candidate("Code Geass: Lelouch of the Rebellion", Some(25)),
+        candidate("Code Geass: Lelouch of the Rebellion - Initiation", None),
     ];
     let file = Duration::from_secs(2 * 3600 + 14 * 60 + 56);
 
-    let matched = best_runtime_match(
+    let matched = best_candidate(
         "code geass - lelouch of the rebellion - initiation",
         file,
         results,
-        |_, _| true,
     )
     .unwrap();
 
-    assert_eq!((matched.index, matched.minute_diff), (1, 0));
-    // A few minutes off matches only if something else says it's the movie.
-    let few_off = Duration::from_secs(2 * 3600 + 11 * 60);
-    let matched = best_runtime_match("code geass", few_off, results, |_, _| true);
-    assert_eq!(matched.map(|m| (m.index, m.minute_diff)), Some((1, 4)));
-    let close_only = |_: usize, minute_diff: i64| minute_diff <= 2;
     assert_eq!(
-        best_runtime_match("code geass", few_off, results, close_only),
-        None
+        (matched.index, matched.fit),
+        (1, RuntimeFit::Match { minute_diff: 0 })
     );
-    // Nothing as long as the file, nothing matched.
-    let too_long = Duration::from_secs(3 * 3600);
+    // Nothing the file could be, nothing chosen.
+    assert_eq!(chosen("code geass", 300, [results[0]]), None);
+}
+
+/// Title and runtime compete: a movie titled as searched for beats a
+/// runtime match that's titled worse, if the file could be a cut of it, but
+/// not if it's far shorter than the file.
+#[test]
+fn a_title_outweighs_a_runtime_match_only_for_a_movie_about_as_long() {
+    // A TV edit of "Wumbo", as long as "Outlaw Wumbo".
+    let wumbo = [
+        candidate("Outlaw Wumbo", Some(96)),
+        candidate("Wumbo", Some(103)),
+    ];
+    assert_eq!(chosen("wumbo", 96, wumbo), Some((1, RuntimeFit::OtherCut)));
+    // Iñárritu's Birdman, as long as the file, over a Romanian film of the
+    // same year that's titled more like it but runs 76 minutes.
+    let birdman = [
+        candidate("Birdman or (The Unexpected Virtue of Ignorance)", Some(120)),
+        candidate("The Birdman", Some(76)),
+    ];
+    let file = Duration::from_secs(3600 + 59 * 60 + 17);
     assert_eq!(
-        best_runtime_match(
-            "code geass",
-            too_long,
-            [candidate(
-                "Code Geass: Lelouch of the Rebellion II - Transgression",
-                136
-            )],
-            |_, _| true,
-        ),
-        None
+        best_candidate("birdman", file, birdman).map(|c| (c.index, c.fit)),
+        Some((0, RuntimeFit::Match { minute_diff: 0 }))
+    );
+    // A runtime match over a movie titled as searched for whose runtime is
+    // unknown, which says nothing against the match.
+    let glimmer = [
+        candidate("Fnord's The Glimmer", Some(123)),
+        candidate("The Glimmer", None),
+    ];
+    assert_eq!(
+        chosen("the glimmer", 123, glimmer),
+        Some((0, RuntimeFit::Match { minute_diff: 0 }))
     );
 }
 
@@ -283,24 +309,18 @@ fn a_file_can_be_another_cut_but_not_an_episode_of_a_movie() {
 
 #[test]
 fn without_a_runtime_match_falls_back_to_what_the_file_could_be() {
-    let candidate = |title, runtime_minutes| Candidate {
-        titles: [title, title],
-        runtime_minutes,
-        year_agrees: false,
-    };
-    let episode = Duration::from_secs(21 * 60 + 11);
     // What TMDB finds for an episode's number, all features.
     let features = [
         candidate("11+", Some(90)),
         candidate("Apollo 11", Some(93)),
         candidate("11:14", Some(86)),
     ];
-    assert_eq!(best_unmatched_candidate("11", episode, features), None);
+    assert_eq!(chosen("11", 21, features), None);
 
     // Titled less like it, but it might be it.
     let with_unknown = [candidate("11+", Some(90)), candidate("Eleven", None)];
     assert_eq!(
-        best_unmatched_candidate("11", episode, with_unknown).map(|u| (u.index, u.fit)),
+        chosen("11", 21, with_unknown),
         Some((1, RuntimeFit::Unknown))
     );
 
@@ -309,8 +329,7 @@ fn without_a_runtime_match_falls_back_to_what_the_file_could_be() {
         candidate("PlayTime", Some(115)),
     ];
     assert_eq!(
-        best_unmatched_candidate("playtime", Duration::from_secs(124 * 60), playtime)
-            .map(|u| (u.index, u.fit)),
+        chosen("playtime", 124, playtime),
         Some((1, RuntimeFit::OtherCut))
     );
 }
@@ -672,17 +691,31 @@ fn a_title_is_a_series_name_and_a_season_at_its_end() {
 /// year, though the other is a minute closer.
 #[test]
 fn prefers_the_file_s_year_to_a_closer_runtime() {
-    let candidate = |runtime_minutes, year_agrees| Candidate {
-        titles: ["Wumbo Lark", "Wumbo Lark"],
-        runtime_minutes: Some(runtime_minutes),
-        year_agrees,
+    let candidate = |runtime_minutes, years_off| Candidate {
+        years_off,
+        ..candidate("Wumbo Lark", Some(runtime_minutes))
     };
-    let file = Duration::from_secs(102 * 60);
-    let results = [candidate(101, false), candidate(99, true)];
+    let results = [candidate(101, Some(2)), candidate(99, Some(0))];
 
-    let matched = best_runtime_match("wumbo lark", file, results, |_, _| true);
+    assert_eq!(chosen("wumbo lark", 102, results).map(|c| c.0), Some(1));
+}
 
-    assert_eq!(matched.map(|m| m.index), Some(1));
+/// A year apart is as good as the file's year, as a festival premiere and a
+/// release can differ by one: the runtime decides.
+#[test]
+fn a_year_off_by_one_agrees_with_the_file_s() {
+    let candidate = |runtime_minutes, years_off| Candidate {
+        years_off,
+        ..candidate("Split", Some(runtime_minutes))
+    };
+    // `Split.2016` at 1:57:08: Shyamalan's of 2017, not a Korean one of 2016.
+    let results = [candidate(117, Some(1)), candidate(121, Some(0))];
+    let file = Duration::from_secs(3600 + 57 * 60 + 8);
+
+    assert_eq!(
+        best_candidate("split", file, results).map(|c| c.index),
+        Some(0)
+    );
 }
 
 /// A run named as a season of its own is the season named as its own words,

@@ -859,8 +859,9 @@ impl<'a> Search<'a> {
     }
 
     /// The movie, of a title search's `results` for `query`, that the file
-    /// is: the one as long as it, if any, or else one named like it. Its
-    /// claims are ranked from `rank`.
+    /// is: the one that [`best_candidate`] scores best for its title, runtime
+    /// and year. Its claims are ranked from `rank`, higher if its runtime
+    /// matches the file's.
     async fn movie_from_results(
         &mut self,
         query: &str,
@@ -896,132 +897,91 @@ impl<'a> Search<'a> {
                 details.push(movie);
             }
         }
-        let candidates: Vec<_> = details
-            .iter()
-            .map(|details| Candidate {
-                titles: [&details.title, &details.original_title],
-                runtime_minutes: details.runtime_minutes,
-                year_agrees: matches!((release_year, details.release_year),
-                    (Some(file), Some(movie)) if file.abs_diff(movie) <= 1),
+        let years_off = |year: Option<u32>| match (release_year, year) {
+            (Some(file), Some(year)) => Some(file.abs_diff(year)),
+            _ => None,
+        };
+        let candidates: Vec<_> = (0..details.len())
+            .map(|index| {
+                // An entry for a cut of another movie is titled as that movie.
+                let movie = &details[cut_of_another(&details, index).map_or(index, |(m, _)| m)];
+                Candidate {
+                    titles: [&movie.title, &movie.original_title],
+                    runtime_minutes: details[index].runtime_minutes,
+                    years_off: years_off(details[index].release_year),
+                }
             })
             .collect();
 
-        // As long as the file give or take a little, or a few minutes more if
-        // its title or year agrees too: a file's runtime is mostly within a
-        // minute or two of the knowledge base's, and a few minutes either way
-        // fits many movies.
-        // A result as long as the file, titled as well as any result it may
-        // be another cut of, of the file's year as nearly: a file a few
-        // minutes off its own title's movie, e.g. a TV edit, is as long as
-        // some other movie, e.g. "Outlaw Justice" for `Justice`'s. Not as
-        // well as one whose runtime is unknown, which says nothing against a
-        // runtime match, e.g. another "The Covenant" for Guy Ritchie's; nor
-        // one further from the file's year, e.g. 2013's "The Taking" for
-        // `The.Taking.2014` as long as "The Taking of Deborah Logan" of 2014.
-        let years_off = |year: Option<u32>| match (release_year, year) {
-            (Some(file), Some(year)) => file.abs_diff(year),
-            (Some(_), None) => u32::MAX,
-            (None, _) => 0,
-        };
-        let best_titled = |within: u32| {
-            candidates
-                .iter()
-                .zip(&details)
-                .filter(|(candidate, movie)| {
-                    matches!(
-                        runtime_fit(claim_runtime, candidate.runtime_minutes),
-                        RuntimeFit::Match { .. } | RuntimeFit::OtherCut
-                    ) && years_off(movie.release_year) <= within
-                })
-                .map(|(candidate, _)| title_similarity(query, candidate.titles))
-                .fold(0.0, f32::max)
-        };
-        // As long as the file give or take a little, or a few minutes more if
-        // its title or year agrees too: a file's runtime is mostly within a
-        // minute or two of the knowledge base's, and a few minutes either way
-        // fits many movies.
-        let fits = |index: usize, minute_diff: i64| {
-            let movie = &details[index];
-            // An entry for a cut of another movie is that movie's.
-            let movie_index = cut_of_another(&details, index).map_or(index, |(movie, _)| movie);
-            let within = years_off(details[movie_index].release_year);
-            if title_similarity(query, candidates[movie_index].titles) < best_titled(within) {
-                return false;
-            }
-            minute_diff <= RUNTIME_CLOSE_MINUTES
-                || parts_runtime.is_some()
-                || corroborates_runtime_match(
-                    query,
-                    release_year,
-                    [&movie.title, &movie.original_title],
-                    movie.release_year,
-                )
-        };
-        if let Some(RuntimeMatch {
-            index,
-            minute_diff,
-            similarity,
-        }) = best_runtime_match(query, claim_runtime, candidates.iter().copied(), fits)
-        {
-            // An entry for a cut of another movie, e.g. `Kingdom Of Heaven
-            // (Director's Cut)`, is that movie's work in an edition, as it's for
-            // the file of a cut that the knowledge base doesn't time.
-            let (index, edition) = match cut_of_another(&details, index) {
-                Some((movie, edition)) => (movie, Some(edition)),
-                None => (index, None),
-            };
-            // Matching runtime is a strong indicator, if something else says it's
-            // this movie too: many are as long as an episode, e.g. a short titled
-            // `Ash 01` for `01.MP4`.
-            let movie = details.swap_remove(index);
-            let titles = [movie.title.as_str(), movie.original_title.as_str()];
-            let runtime_bonus = if parts_runtime.is_some()
-                || corroborates_runtime_match(query, release_year, titles, movie.release_year)
-            {
-                CORROBORATED_RUNTIME_BONUS
-            } else {
-                UNCORROBORATED_RUNTIME_BONUS
-            };
-            let closeness =
-                RUNTIME_CLOSENESS_BONUS * (RUNTIME_TOLERANCE_MINUTES - minute_diff) as f32;
-            let bonus = runtime_bonus + closeness + TITLE_SIMILARITY_BONUS * similarity;
-            let mut claims = movie_claims(rank + bonus, &movie);
-            // Lasting as long as the movie is evidence that the file is the
-            // feature rather than an extra. Like the edition, it's judged
-            // once this result stands, against what the file's name says of
-            // its role, so it ranks as that kind of evidence does, not as
-            // the title that found the movie.
-            claims.push(Ranked::new(
-                rank.fixed(KB_FILE_ROLE),
-                ClaimPredicate::FileRole(FileRole::Main),
-            ));
-            if let Some(edition) = edition {
-                claims.push(Ranked::new(
-                    rank.fixed(KB_EDITION),
-                    ClaimPredicate::Edition(edition),
-                ));
-            }
-            self.claims.push(claims);
-            return Ok(MovieSearchOutcome::RuntimeMatch);
-        }
-
-        // With no result as long as the file, one named like it will do, unless
-        // its runtime says the file can't be it, e.g. an episode named like a
-        // feature. If they all do, there's no result.
-        let Some(Unmatched {
+        // If none could be the file, there's no result, e.g. an episode named
+        // like a feature.
+        let Some(Chosen {
             index,
             fit,
             similarity,
-        }) = best_unmatched_candidate(query, claim_runtime, candidates.iter().copied())
+        }) = best_candidate(query, claim_runtime, candidates)
         else {
             return Ok(MovieSearchOutcome::Nothing);
         };
-        let bonus = TITLE_SIMILARITY_BONUS * similarity;
-        let mut claims = movie_claims(rank + bonus, &details[index]);
-        if fit == RuntimeFit::OtherCut {
-            // The file is feature length, only another cut than the one the
-            // knowledge base times, e.g. an extended edition. It's still the
-            // feature of its own manifestation.
+
+        // As long as the file give or take a little, or a few minutes more if
+        // its title or year agrees too: a file's runtime is mostly within a
+        // minute or two of the knowledge base's, and a few minutes either way
+        // fits many movies.
+        if let RuntimeFit::Match { minute_diff } = fit {
+            // An entry for a cut of another movie, e.g. `Kingdom Of Heaven
+            // (Director's Cut)`, is that movie's work in an edition, as it's for
+            // the file of a cut that the knowledge base doesn't time.
+            let (movie_index, edition) = match cut_of_another(&details, index) {
+                Some((movie, edition)) => (movie, Some(edition)),
+                None => (index, None),
+            };
+            let movie = &details[movie_index];
+            let titles = [movie.title.as_str(), movie.original_title.as_str()];
+            // Matching runtime is a strong indicator, if something else says
+            // it's this movie too: many are as long as an episode, e.g. a
+            // short titled `Ash 01` for `01.MP4`.
+            let corroborated = parts_runtime.is_some()
+                || corroborates_runtime_match(query, release_year, titles, movie.release_year);
+            if corroborated || minute_diff <= RUNTIME_CLOSE_MINUTES {
+                let runtime_bonus = if corroborated {
+                    CORROBORATED_RUNTIME_BONUS
+                } else {
+                    UNCORROBORATED_RUNTIME_BONUS
+                };
+                let closeness =
+                    RUNTIME_CLOSENESS_BONUS * (RUNTIME_TOLERANCE_MINUTES - minute_diff) as f32;
+                let bonus = runtime_bonus + closeness + TITLE_SIMILARITY_BONUS * similarity;
+                let mut claims = movie_claims(rank + bonus, movie);
+                // Lasting as long as the movie is evidence that the file is the
+                // feature rather than an extra. Like the edition, it's judged
+                // once this result stands, against what the file's name says of
+                // its role, so it ranks as that kind of evidence does, not as
+                // the title that found the movie.
+                claims.push(Ranked::new(
+                    rank.fixed(KB_FILE_ROLE),
+                    ClaimPredicate::FileRole(FileRole::Main),
+                ));
+                if let Some(edition) = edition {
+                    claims.push(Ranked::new(
+                        rank.fixed(KB_EDITION),
+                        ClaimPredicate::Edition(edition),
+                    ));
+                }
+                self.claims.push(claims);
+                return Ok(MovieSearchOutcome::RuntimeMatch);
+            }
+        }
+
+        // Not as long as the file, or not enough else says so: it's only
+        // titled like it.
+        let movie = &details[index];
+        let similarity = title_similarity(query, [&movie.title, &movie.original_title]);
+        let mut claims = movie_claims(rank + TITLE_SIMILARITY_BONUS * similarity, movie);
+        if fit != RuntimeFit::Unknown {
+            // The file is feature length, only perhaps another cut than the
+            // one the knowledge base times, e.g. an extended edition. It's
+            // still the feature of its own manifestation.
             claims.push(Ranked::new(
                 rank.fixed(KB_FILE_ROLE),
                 ClaimPredicate::FileRole(FileRole::Main),
