@@ -1210,6 +1210,9 @@ async fn a_runtime_match_titled_worse_than_a_movie_the_file_may_be_a_cut_of_is_n
         // "Yonder" of the year before may be a cut of it, but "Yonder of
         // Zibble Lark" is of its year and as long.
         video(3, "Movies/Yonder.2014.mkv", 90.0),
+        // "The Zorp" of its year is titled more like it, but far too short
+        // to be another cut of it, as "Birdman" was of Iñárritu's.
+        video(4, "Movies/Zorp.2014.mkv", 119.3),
     ];
     let kb = CatalogKb {
         movies: vec![
@@ -1219,6 +1222,13 @@ async fn a_runtime_match_titled_worse_than_a_movie_the_file_may_be_a_cut_of_is_n
             kb_movie(202, "The Glimmer", Some(2023), None),
             kb_movie(301, "Yonder of Zibble Lark", Some(2014), Some(90)),
             kb_movie(302, "Yonder", Some(2013), Some(77)),
+            kb_movie(
+                401,
+                "Zorp or (The Unexpected Virtue of Fnords)",
+                Some(2014),
+                Some(120),
+            ),
+            kb_movie(402, "The Zorp", Some(2014), Some(76)),
         ],
         ..CatalogKb::default()
     };
@@ -1227,5 +1237,13 @@ async fn a_runtime_match_titled_worse_than_a_movie_the_file_may_be_a_cut_of_is_n
         .into_iter()
         .map(|(tmdb_id, files)| (tmdb_id, files[0].0))
         .collect();
-    assert_eq!(movies, vec![(Some(102), 1), (Some(201), 2), (Some(301), 3)]);
+    assert_eq!(
+        movies,
+        vec![
+            (Some(102), 1),
+            (Some(201), 2),
+            (Some(301), 3),
+            (Some(401), 4)
+        ]
+    );
 }
